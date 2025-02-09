@@ -1,3 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+using PiIrrigateServer.Database;
+using PiIrrigateServer.Profiles;
+using PiIrrigateServer.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +12,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<IDataService, DataService>();
+builder.Services.AddAutoMapper(typeof(DataProfile));
+builder.Services.AddDbContext<ApplicationDbContext>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

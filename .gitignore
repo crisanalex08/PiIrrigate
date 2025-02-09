@@ -5,3 +5,8 @@
 /PiIrrigateServer/.vs/PiIrrigateServer
 /PiIrrigateServer/bin/Debug/net8.0
 /PiIrrigateServer/obj
+/UserManagement/.env
+/UserManagement/bin/Debug/net8.0
+/UserManagement/obj
+/UserManagement/.env
+/PiIrrigateServer/.env
