@@ -5,6 +5,6 @@
         public int IrrigationZoneId;
         public int SensorId { get; set; }
         public DateTime Timestamp { get; set; }
-        public string Value { get; set; }
+        public ValueModel Value { get; set; }
     }
 }

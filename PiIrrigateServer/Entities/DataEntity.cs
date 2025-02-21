@@ -1,4 +1,6 @@
-﻿namespace PiIrrigateServer.Entities
+﻿using PiIrrigateServer.Models;
+
+namespace PiIrrigateServer.Entities
 {
     public class DataEntity
     {
@@ -6,6 +8,6 @@
         public int IrrigationZoneId { get; set; } 
         public int SensorId { get; set; }
         public DateTime Timestamp { get; set; }
-        public string Value { get; set; }
+        public DataModel Value { get; set; }
     }
 }
