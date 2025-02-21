@@ -1,0 +1,17 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/PiIrrigateServer/.vs/PiIrrigateServer
+/PiIrrigateServer/bin/Debug/net8.0
+/PiIrrigateServer/obj/Debug/net8.0
+/PiIrrigateServer/obj
+/PiIrrigateWeb/.angular/cache/19.1.4/PiIrrigateWeb
+/PiIrrigateWeb/node_modules/.bin
+/PiIrrigateWeb/node_modules/.pnpm
+/PiIrrigateWeb/node_modules
+/UserManagement/bin/Debug/net8.0
+/UserManagement/obj
+/PiIrrigateServer/.env
+/.vs
+*.env
