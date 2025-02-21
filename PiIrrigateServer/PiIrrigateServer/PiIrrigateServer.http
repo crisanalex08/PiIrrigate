@@ -1,0 +1,6 @@
+@PiIrrigateServer_HostAddress = http://localhost:5233
+
+GET {{PiIrrigateServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
