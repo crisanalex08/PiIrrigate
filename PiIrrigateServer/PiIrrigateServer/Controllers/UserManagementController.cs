@@ -18,7 +18,7 @@ namespace PiIrrigateServer.Controllers
             this.userService = userService;
         }
 
-        [HttpPost("Register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest register)
         {
             try
@@ -31,6 +31,15 @@ namespace PiIrrigateServer.Controllers
                 logger.LogError(e.Message, e);
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error registering user");
             }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        {
+            var result = await userService.LoginUser(request);
+            if (!result.Success) return Unauthorized(result.Message);
+
+            return Ok(new { Token = result.Token, Message = result.Message });
         }
 
     }

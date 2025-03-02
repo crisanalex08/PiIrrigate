@@ -12,7 +12,7 @@ using PiIrrigateServer.Database;
 namespace PiIrrigateServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250221173939_InitialCreate")]
+    [Migration("20250302183736_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -46,9 +46,8 @@ namespace PiIrrigateServer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");

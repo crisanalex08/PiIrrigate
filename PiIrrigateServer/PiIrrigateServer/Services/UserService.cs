@@ -1,4 +1,5 @@
-﻿using PiIrrigateServer.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using PiIrrigateServer.Models;
 using PiIrrigateServer.Repositories;
 
 namespace PiIrrigateServer.Services
@@ -10,6 +11,7 @@ namespace PiIrrigateServer.Services
         Task<bool> UpdateUserProfileAsync(Guid userId, UpdateProfileRequest request);
         Task<bool> ChangeUserRoleAsync(Guid userId, string newRole);
         Task<AuthResult> RegisterUser(RegisterRequest register);
+        Task<AuthResult> LoginUser(LoginRequest request);
     }
     public class UserService : IUserService
     {
@@ -74,6 +76,25 @@ namespace PiIrrigateServer.Services
             {
                 throw new Exception(e.Message);
             }
+        }
+
+        public async Task<AuthResult> LoginUser(LoginRequest request)
+        {
+            var user = await userRepository.GetByEmailAsync(request.Email);
+            if (user == null)
+            {
+                return new AuthResult { Success = false, Message = "Invalid email or password" };
+            }
+
+            var passwordVerification = passwordHasher.VerifyPassword(user, user.PasswordHash, request.Password);
+            if (passwordVerification == false)
+            {
+                return new AuthResult { Success = false, Message = "Invalid email or password" };
+            }
+
+            var token = jwtService.GenerateJwtToken(user);
+
+            return new AuthResult { Success = true, Token = token, Message = "Login successful" };
         }
 
         public Task<bool> UpdateUserProfileAsync(Guid userId, UpdateProfileRequest request)
