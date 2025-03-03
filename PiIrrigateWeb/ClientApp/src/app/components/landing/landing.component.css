@@ -1,18 +1,15 @@
-.background-image{
-    background-image: url(src\app\assets\images\landing.jpg);
+.carousel-item{
+    padding-top: 100px;
+    height: 20vh;
+    min-height: 300px;
+    background: no-repeat center center scroll;
     background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 100vh;
-    width: 100%;
-    position: relative;
-    z-index: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 2rem;
-    font-weight: bold;
-    text-align: center;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.call-to-action-section{
+    padding: 100px 0;
+}
+
+.sign-up-button{
+    margin-top: 100px;
 }

@@ -1,3 +1,32 @@
-<div class="background-image">
-
+<!-- Hero Section -->
+<div class="hero-section text-center p-6 bg-green-600 text-white">
+    <h1 class="text-4xl font-bold">Smart Irrigation System</h1>
+    <p class="mt-2 text-lg">Monitor & control irrigation zones in real-time from anywhere.</p>
+    <p-button label="Get Started" icon="pi pi-arrow-right" class="sign-up-button" (click)="goToRegister()"></p-button>
 </div>
+
+
+<!-- Features -->
+
+<div class="featurs-section">
+    <p-carousel [value]="features" [numVisible]="1" [circular]="true">
+        <ng-template let-feature #item>
+            <div class="carousel-item text-center">
+                <i [class]="feature.icon" style="font-size: 4rem"></i>
+                <h3 class="text-lg font-bold mt-2">{{feature.title}}</h3>
+                <p class="mt-2">{{feature.description}}</p>
+            </div>
+        </ng-template>
+    </p-carousel>
+</div>
+
+<!-- Call to Action -->
+
+<div class="call-to-action-section">
+    <div class="cta-content text-center p-6">
+        <h2 class="text-3xl font-bold">Ready to get started?</h2>
+        <p class="mt-2">Sign up now and start monitoring your irrigation zones in real-time.</p>
+        <p-button label="Get Started" icon="pi pi-arrow-right" class="sign-up-button" (click)="goToRegister()"></p-button>
+    </div>
+</div>
+
