@@ -1,0 +1,7 @@
+input{
+    width: 100%;
+}
+
+.password::ng-deep input{
+    width: calc(360px) !important;
+}

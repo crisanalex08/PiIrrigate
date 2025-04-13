@@ -1,16 +1,15 @@
-.background-image{
-    background-image: url(https://github.com/crisanalex08/PiIrrigate/blob/5be2917c4daad126ccacd7874b6765d0726937ce/PiIrrigateWeb/ClientApp/src/app/assets/images/landing.jpg?raw=true);
+.carousel-item{
+    padding-top: 100px;
+    height: 20vh;
+    min-height: 300px;
+    background: no-repeat center center scroll;
     background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 100vh;
-    width: 100%;
-    scale: 1.1;
-    position: relative;
-    z-index: 1;
-    display: absolute;
-    justify-content: center;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    filter: blur(10.5px);
-    z-index: -1;
+}
+
+.call-to-action-section{
+    padding: 100px 0;
+}
+
+.sign-up-button{
+    margin-top: 100px;
 }
