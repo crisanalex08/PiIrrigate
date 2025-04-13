@@ -1,18 +1,16 @@
 .background-image{
-    background-image: url(src\app\assets\images\landing.jpg);
+    background-image: url(https://github.com/crisanalex08/PiIrrigate/blob/5be2917c4daad126ccacd7874b6765d0726937ce/PiIrrigateWeb/ClientApp/src/app/assets/images/landing.jpg?raw=true);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     height: 100vh;
     width: 100%;
+    scale: 1.1;
     position: relative;
     z-index: 1;
-    display: flex;
+    display: absolute;
     justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 2rem;
-    font-weight: bold;
-    text-align: center;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    filter: blur(10.5px);
+    z-index: -1;
 }

@@ -1,10 +1,16 @@
-import { ApplicationConfig } from '@angular/core';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { providePrimeNG } from 'primeng/config';
-import Aura from "@primeng/themes/aura";
+import { NgModule } from "@angular/core";
+import { AppComponent } from "./app.component";
+import { LandingComponent } from "./components/landing/landing.component";
+import { LoginComponent } from "./components/login/login.component";
+import { RegisterComponent } from "./components/register/register.component";
+import { BrowserModule } from "@angular/platform-browser";
+
+import { AppRoutingModule, routes } from "./app.routing.module";
 import { definePreset } from "@primeng/themes";
-import { provideRouter, RouterModule } from '@angular/router';
-import { routes } from './app.routing.module';
+import Aura from "@primeng/themes/aura";
+
+import { ButtonModule } from "primeng/button";
+import { providePrimeNG } from "primeng/config";
 
 const MyPreset = definePreset(Aura, {
     primitive: {
@@ -664,14 +670,21 @@ const MyPreset = definePreset(Aura, {
     }
 });
 
-export const appConfig: ApplicationConfig = {
-    providers: [
-        provideAnimationsAsync(),
-        providePrimeNG({
-            theme: {
-               preset: MyPreset,
-            }
-        }),
-        provideRouter(routes),
+@NgModule({
+    declarations: [
+        AppComponent,
+        LandingComponent,
+        LoginComponent,
+        RegisterComponent
     ],
-};
+    imports: [
+        BrowserModule,
+        ButtonModule,
+        AppRoutingModule,
+    ],
+    providers: [
+        MyPreset.provider,
+    ],
+    bootstrap: [AppComponent]
+})
+export class AppModule { }

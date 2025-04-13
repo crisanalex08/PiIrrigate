@@ -1,0 +1,28 @@
+{
+    "files.associations": {
+      "optional": "cpp",
+      "format": "cpp",
+      "system_error": "cpp",
+      "charconv": "c",
+      "array": "c",
+      "functional": "c",
+      "tuple": "c",
+      "type_traits": "c",
+      "utility": "c",
+      "dht.h": "c",
+      "display.h": "c",
+      "stdio.h": "c",
+      "soil.h": "c",
+      "rain.h": "c"
+    },
+    "terminal.integrated.defaultProfile.windows": "ESP Init",
+    "terminal.integrated.profiles.windows": {
+    "ESP Init": {
+      "path": "cmd.exe",
+      "args": [
+         "/k",
+         "C:/Espressif/frameworks/esp-idf-v5.4/export.bat",
+      ]
+    }
+  },
+}
