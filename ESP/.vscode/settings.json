@@ -13,7 +13,8 @@
       "display.h": "c",
       "stdio.h": "c",
       "soil.h": "c",
-      "rain.h": "c"
+      "rain.h": "c",
+      "string": "cpp"
     },
     "terminal.integrated.defaultProfile.windows": "ESP Init",
     "terminal.integrated.profiles.windows": {
