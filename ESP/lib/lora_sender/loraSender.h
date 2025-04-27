@@ -19,6 +19,16 @@ public:
      * @param rainLevel The rain level value to send.
      */
     void sendSensorData(int temperature, int humidity, int soilMoisture, int rainLevel);
+
+    /**
+     * @brief Send sensor data via LoRa with acknowledgment.
+     *
+     * @param temperature The temperature value to send.
+     * @param humidity The humidity value to send.
+     * @param soilMoisture The soil moisture value to send.
+     * @param rainLevel The rain level value to send.
+     */
+    void sendSensorDataWithAck(int packetCount, int temperature, int humidity, int soilMoisture, int rainLevel);
 private:
     uint8_t station_mac[6];  // MAC address of the device
 };

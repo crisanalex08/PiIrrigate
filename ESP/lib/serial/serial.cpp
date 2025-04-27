@@ -38,13 +38,13 @@ void MySerial::send(const std::string &data) {
     uart_write_bytes(UART_NUM, data.c_str(), data.length());
 }
 
-void MySerial::sendSensorData(int temperature, int humidity, int soil_moisture, int rain_level) {
+void MySerial::sendSensorData(int packetCount, int temperature, int humidity, int soil_moisture, int rain_level) {
     char buffer[128];
 
     // Format the sensor data into a string, including the unique identifier
     snprintf(buffer, sizeof(buffer),
-             "ID:%02X%02X%02X%02X%02X%02X, T:%d, H:%d, S:%d, R:%d\n",
-             station_mac[0], station_mac[1], station_mac[2], station_mac[3], station_mac[4], station_mac[5],
+             "C:%d, ID:%02X%02X%02X%02X%02X%02X, T:%d, H:%d, S:%d, R:%d\n",
+             packetCount, station_mac[0], station_mac[1], station_mac[2], station_mac[3], station_mac[4], station_mac[5],
              temperature, humidity, soil_moisture, rain_level);
 
     // Send the formatted string via UART

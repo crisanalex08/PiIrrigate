@@ -8,7 +8,9 @@
 #include <LoraReceiver.h>
 
 // Define GPIO pin for an LED (example: GPIO2)
-#define LED_PIN GPIO_NUM_2
+#define LED_PIN GPIO_NUM_4
+#define MESSAGE_TIMEOUT 20000  // 2 seconds timeout for acknowledgment
+int packetCount = 0; // Packet count for debugging
 
 DHT dht;
 RainSensor rainSensor;
@@ -69,11 +71,11 @@ void loop()
     soilMoisture = soilSensor.read();
 
     // Send sensor data via custom serial
-    customSerial.sendSensorData(temperature, humidity, soilMoisture, rainLevel);
+    customSerial.sendSensorData(packetCount, temperature, humidity, soilMoisture, rainLevel);
 
     // Send sensor data via LoRa
-    loraSender.sendSensorData(temperature, humidity, soilMoisture, rainLevel);
-
+    loraSender.sendSensorDataWithAck(packetCount, temperature, humidity, soilMoisture, rainLevel);
+    packetCount++; // Increment packet count for the next message
     // Toggle LED to indicate activity
     static bool ledState = false;
     ledState = !ledState;
@@ -90,14 +92,16 @@ void loop()
     {
         // Send received data via custom serial
         customSerial.send(receivedData);
+        // Flash LED twice to indicate data received
+        for (int i = 0; i < 2; i++)
+        {
+            digitalWrite(LED_PIN, HIGH);
+            delay(100);
+            digitalWrite(LED_PIN, LOW);
+            delay(100);
+        }
     }
-
     // Toggle LED to indicate activity
-    static bool ledState = false;
-    ledState = !ledState;
-    digitalWrite(LED_PIN, ledState);
-
-    // Wait 2 seconds before checking for the next packet
-    delay(2000);
+    static bool ledState = true;
 #endif
 }

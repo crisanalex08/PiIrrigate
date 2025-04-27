@@ -22,6 +22,12 @@ std::string LoraReceiver::receiveSensorData() {
             buffer[index++] = (char)LoRa.read();
         }
         buffer[index] = '\0';  // Null-terminate the string
+
+        // Send acknowledgment
+        LoRa.beginPacket();
+        LoRa.print("ACK");
+        LoRa.endPacket();
+        
         return std::string(buffer);
     }
     return "";
