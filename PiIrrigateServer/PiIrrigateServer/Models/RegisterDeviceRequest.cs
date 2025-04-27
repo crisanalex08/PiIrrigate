@@ -2,6 +2,7 @@
 {
     public class RegisterDeviceRequest
     {
+        public Guid ZoneId { get; set; } // Unique identifier for the zone
         public string Mac { get; set; } // Unique identifier for the device
         public string Name { get; set; } // Name of the device
         public string Location { get; set; } // Location of the device

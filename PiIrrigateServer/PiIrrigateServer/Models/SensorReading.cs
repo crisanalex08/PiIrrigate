@@ -2,6 +2,7 @@
 {
     public class SensorReading
     {
+        public Guid ZoneId { get; set; } // Unique identifier for the zone
         public string Mac { get; set; } // Unique identifier for the device
         public DateTime Timestamp { get; set; } // Timestamp of the reading
         public double Temperature { get; set; } // Temperature

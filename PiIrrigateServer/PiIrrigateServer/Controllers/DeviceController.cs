@@ -10,13 +10,16 @@ namespace PiIrrigateServer.Controllers
     public class DeviceController : ControllerBase
     {
         private readonly ILogger<UserManagementController> logger;
-        private readonly IDeviceManager deviceManager;
+        private readonly IiotDeviceManager deviceManager;
         private readonly IDeviceRepository deviceRepository;
-        public DeviceController(ILogger<UserManagementController> logger, IDeviceManager deviceManager, IDeviceRepository deviceRepository)
+        private readonly IZoneRepository zoneRepository;
+
+        public DeviceController(ILogger<UserManagementController> logger, IiotDeviceManager deviceManager, IDeviceRepository deviceRepository, IZoneRepository zoneRepository)
         {
             this.logger = logger;
             this.deviceManager = deviceManager;
             this.deviceRepository = deviceRepository;
+            this.zoneRepository = zoneRepository;
         }
 
         [HttpPost("register")]
@@ -34,7 +37,7 @@ namespace PiIrrigateServer.Controllers
                 // Create a new device object  
                 var newDevice = new Device
                 {
-                    ZoneId = Guid.NewGuid(),
+                    ZoneId = register.ZoneId,
                     Mac = register.Mac,
                     Name = register.Name,
                     Location = register.Location,
@@ -50,15 +53,8 @@ namespace PiIrrigateServer.Controllers
                     return StatusCode(500, "Failed to save the device to the database.");
                 }
 
-                // Create the IoT Hub device  
-                var iotDeviceId = await deviceManager.CreateIotDevice();
-                if (string.IsNullOrEmpty(iotDeviceId))
-                {
-                    return StatusCode(500, "Failed to create the IoT Hub device.");
-                }
-
                 // Retrieve the connection string for the IoT Hub device  
-                var connectionString = await deviceManager.GetDeviceConnectionString(iotDeviceId);
+                var connectionString = await deviceManager.GetDeviceConnectionString(register.ZoneId.ToString());
                 if (string.IsNullOrEmpty(connectionString))
                 {
                     return StatusCode(500, "Failed to retrieve the IoT Hub device connection string.");

@@ -16,9 +16,9 @@ namespace PiIrrigateServer.Repositories
     }
     public class DeviceRepository : IDeviceRepository
     {
-        private readonly ILogger<IUserRepository> logger;
+        private readonly ILogger<IDeviceRepository> logger;
         private readonly IServiceScopeFactory serviceScopeFactory;
-        public DeviceRepository(ILogger<IUserRepository> logger,
+        public DeviceRepository(ILogger<IDeviceRepository> logger,
                     IServiceScopeFactory serviceScopeFactory)
         {
             this.logger = logger;
