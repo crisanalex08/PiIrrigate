@@ -1,4 +1,6 @@
 using PiIrrigateServer.Database;
+using PiIrrigateServer.Managers;
+using PiIrrigateServer.Models;
 using PiIrrigateServer.Repositories;
 using PiIrrigateServer.Services;
 
@@ -13,9 +15,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
+builder.Services.AddScoped<IDeviceManager, DeviceManager>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
+builder.Services.Configure<IoTHubConfiguraiton>(builder.Configuration.GetSection("IotHubConfiguration"));
+builder.Services.AddHostedService<IoTHubDataManager>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
