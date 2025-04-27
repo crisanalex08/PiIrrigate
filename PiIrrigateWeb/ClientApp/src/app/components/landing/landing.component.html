@@ -1,32 +1,22 @@
-<!-- Hero Section -->
-<div class="hero-section text-center p-6 bg-green-600 text-white">
-    <h1 class="text-4xl font-bold">Smart Irrigation System</h1>
-    <p class="mt-2 text-lg">Monitor & control irrigation zones in real-time from anywhere.</p>
-    <p-button label="Get Started" icon="pi pi-arrow-right" class="sign-up-button" (click)="goToRegister()"></p-button>
+<div class="landing-title-container">
+    <h1 class="landing-title">Welcome to Our App</h1>
+    <p class="landing-subtitle">Your one-stop solution for all your needs</p>
+    <button mat-flat-button color="primary" class="landing-button">Get Started</button>
 </div>
 
-
-<!-- Features -->
-
-<div class="featurs-section">
-    <p-carousel [value]="features" [numVisible]="1" [circular]="true">
-        <ng-template let-feature #item>
-            <div class="carousel-item text-center">
-                <i [class]="feature.icon" style="font-size: 4rem"></i>
-                <h3 class="text-lg font-bold mt-2">{{feature.title}}</h3>
-                <p class="mt-2">{{feature.description}}</p>
-            </div>
-        </ng-template>
-    </p-carousel>
-</div>
-
-<!-- Call to Action -->
-
-<div class="call-to-action-section">
-    <div class="cta-content text-center p-6">
-        <h2 class="text-3xl font-bold">Ready to get started?</h2>
-        <p class="mt-2">Sign up now and start monitoring your irrigation zones in real-time.</p>
-        <p-button label="Get Started" icon="pi pi-arrow-right" class="sign-up-button" (click)="goToRegister()"></p-button>
-    </div>
-</div>
-
+<div class="features-list-container">
+    <mat-grid-list cols="3" rowHeight="1:1">
+        <mat-grid-tile>
+            <h2>Feature 1</h2>
+            <p>Description of feature 1.</p>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <h2>Feature 2</h2>
+            <p>Description of feature 2.</p>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <h2>Feature 3</h2>
+            <p>Description of feature 3.</p>
+        </mat-grid-tile>
+      </mat-grid-list>
+</div>    
