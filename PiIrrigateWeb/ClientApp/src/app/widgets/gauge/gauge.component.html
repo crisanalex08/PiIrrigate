@@ -1,0 +1,67 @@
+<div class="moisture-gauge-container">
+    <div class="gauge-wrapper">
+      <!-- SVG Circle -->
+      <svg [attr.width]="size" [attr.height]="size" [attr.viewBox]="'0 0 ' + size + ' ' + size">
+        <!-- Background circle -->
+        <circle
+          [attr.cx]="size/2"
+          [attr.cy]="size/2"
+          [attr.r]="radius"
+          [attr.stroke-width]="strokeWidth"
+          [attr.stroke]="emptyColor"
+          fill="none"
+        ></circle>
+        
+        <!-- Foreground circle (progress) -->
+        <circle
+          [attr.cx]="size/2"
+          [attr.cy]="size/2"
+          [attr.r]="radius"
+          [attr.stroke-width]="strokeWidth"
+          [attr.stroke]="filledColor"
+          fill="none"
+          stroke-linecap="round"
+          [attr.stroke-dasharray]="circumference"
+          [attr.stroke-dashoffset]="dashoffset"
+          [attr.transform]="'rotate(-90 ' + size/2 + ' ' + size/2 + ')'"
+        ></circle>
+        
+        <!-- Percentage text -->
+        <text 
+          [attr.x]="size/2" 
+          [attr.y]="size/2" 
+          dominant-baseline="middle" 
+          text-anchor="middle" 
+          font-size="28"
+          font-weight="bold"
+          fill="#ebebeb"
+        >
+          {{moistureLevel}}%
+        </text>
+      </svg>
+      
+      <!-- Label -->
+      <div class="gauge-label">
+        <span>{{gaugeLabel}}</span>
+      </div>
+    </div>
+    
+    <!-- Slider to adjust the value (for demo purposes) -->
+    <div class="slider-container">
+      <label class="slider-label">
+        Adjust moisture level:
+      </label>
+      <input
+        type="range"
+        min="0"
+        max="100"
+        [value]="moistureLevel"
+        (input)="updateMoistureLevel($event)"
+        class="moisture-slider"
+      />
+      <div class="slider-labels">
+        <span>0%</span>
+        <span>100%</span>
+      </div>
+    </div>
+  </div>

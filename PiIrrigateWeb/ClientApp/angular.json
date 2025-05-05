@@ -5,13 +5,21 @@
   "projects": {
     "ClientApp": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular": {
+          "component": {
+            "inlineTemplate": true,
+            "inlineStyle": true,
+            "skipTests": true
+          }
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
       "architect": {
         "build": {
-          "ssr": false, 
+          "ssr": false,
           "prerender": false,
           "builder": "@angular-devkit/build-angular:application",
           "options": {
