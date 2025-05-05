@@ -7,6 +7,17 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 export const routes: Routes = [
     {
+        path: '', 
+        component: AppComponent,
+        children: [
+            {
+                path: "dashboard",
+                component: DashboardComponent,
+                outlet: "home",
+            },
+        ]
+    },
+    {
         path: "login",
         component: LoginComponent,
     },
@@ -15,14 +26,11 @@ export const routes: Routes = [
         component: RegisterComponent,
     },
     {
-        path: "dashboard",
-        component: DashboardComponent,
-    },
-    {
         path: "landing",
         component: LandingComponent,
     },
     {
-        path: '**', component: LandingComponent,
+        path: '**', 
+        component: AppComponent,
     },
 ];

@@ -1,0 +1,49 @@
+.moisture-gauge-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    gap: 1.5rem;
+  }
+  
+  .gauge-wrapper {
+    position: relative;
+    width: 12rem;
+    height: 12rem;
+  }
+  
+  .gauge-label {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    bottom: 0;
+    margin-bottom: -2.5rem;
+    font-weight: 500;
+    color: #ebebeb;
+  }
+  
+  .slider-container {
+    width: 100%;
+    max-width: 20rem;
+    margin-top: 2rem;
+  }
+  
+  .slider-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4b5563;
+    margin-bottom: 0.25rem;
+  }
+  
+  .moisture-slider {
+    width: 100%;
+  }
+  
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #ebebeb;
+  }

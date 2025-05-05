@@ -1,0 +1,9 @@
+.button-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+mat-drawer-container {
+    height: 100vh;
+}
