@@ -12,9 +12,17 @@ namespace PiIrrigateServer.SignalR
             this.hubContext = hubContext;
         }
 
-        public async Task SendLiveData(SensorReading data)
+        // Clients join a group based on ZoneId
+        public async Task JoinZoneGroup(Guid zoneId)
         {
-            await hubContext.Clients.All.SendAsync("ReceiveLiveData", data);
+            await Groups.AddToGroupAsync(Context.ConnectionId, zoneId.ToString());
+        }
+
+        // Send live data to a specific zone group
+        public async Task SendLiveDataToZone(SensorReading data)
+        {
+            await hubContext.Clients.Group(data.ZoneId.ToString()).SendAsync("ReceiveLiveData", data);
         }
     }
+
 }

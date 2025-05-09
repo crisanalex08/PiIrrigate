@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using PiIrrigateServer.Models;
+﻿using PiIrrigateServer.Models;
 using PiIrrigateServer.Repositories;
 
 namespace PiIrrigateServer.Services
@@ -20,7 +19,7 @@ namespace PiIrrigateServer.Services
         private readonly IJwtService jwtService;
         private readonly IPasswordHasher passwordHasher;
 
-        public UserService(IUserRepository userRepository, 
+        public UserService(IUserRepository userRepository,
             ILogger<IUserService> logger, IJwtService jwtService, IPasswordHasher passwordHasher)
         {
             this.userRepository = userRepository;
@@ -70,7 +69,7 @@ namespace PiIrrigateServer.Services
 
                 var token = jwtService.GenerateJwtToken(user);
 
-                return new AuthResult { Success = true, Token = token, Message = "User registered successfully" };
+                return new AuthResult { Success = true, Token = token, UserId = user.Id, Message = "User registered successfully" };
             }
             catch (Exception e)
             {

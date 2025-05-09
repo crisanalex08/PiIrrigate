@@ -8,7 +8,15 @@ using PiIrrigateServer.SignalR;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.  
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", builder =>
+    {
+        builder.WithOrigins("http://localhost:4200") // Allow Angular app
+               .AllowAnyHeader()
+               .AllowAnyMethod();
+    });
+});
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle  
@@ -37,6 +45,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting(); // Add this line to configure routing middleware  
+app.UseCors("AllowAngularApp"); // Apply the CORS policy
 
 app.UseAuthorization();
 app.UseEndpoints(endpoints =>

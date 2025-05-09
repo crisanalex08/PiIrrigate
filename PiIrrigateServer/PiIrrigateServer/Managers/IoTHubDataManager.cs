@@ -31,6 +31,18 @@ namespace PiIrrigateServer.Managers
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            var task = ExecuteAsync(cancellationToken);
+            if (task.IsCompleted)
+            {
+                logger.LogInformation("IoTHubDataManager started successfully.");
+            }
+            else
+            {
+                logger.LogWarning("IoTHubDataManager failed to start.");
+            }
+        }
+            public async Task ExecuteAsync(CancellationToken cancellationToken)
+        {
             logger.LogInformation("Starting IoTHubDataManager...");
 
             using var scope = serviceScopeFactory.CreateScope();

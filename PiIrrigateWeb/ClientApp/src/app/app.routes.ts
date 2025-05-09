@@ -4,11 +4,12 @@ import { LoginComponent } from './components/login/login.component';
 import { LandingComponent } from './components/landing/landing.component';
 import { RegisterComponent } from './components/register/register.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { HomeComponent } from './components/home/home.component';
 
 export const routes: Routes = [
     {
-        path: '', 
-        component: AppComponent,
+        path: 'home', 
+        component: HomeComponent,
         children: [
             {
                 path: "dashboard",
@@ -29,8 +30,8 @@ export const routes: Routes = [
         path: "landing",
         component: LandingComponent,
     },
-    {
-        path: '**', 
-        component: AppComponent,
-    },
+    // {
+    //     path: '**', 
+    //     component: AppComponent,
+    // },
 ];
