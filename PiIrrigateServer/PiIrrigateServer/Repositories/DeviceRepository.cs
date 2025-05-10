@@ -156,7 +156,6 @@ namespace PiIrrigateServer.Repositories
                 existingDevice.Mac = device.Mac;
                 existingDevice.Name = device.Name;
                 existingDevice.Location = device.Location;
-                existingDevice.Owner = device.Owner;
                 existingDevice.Description = device.Description;
                 existingDevice.IsRegistered = device.IsRegistered;
 

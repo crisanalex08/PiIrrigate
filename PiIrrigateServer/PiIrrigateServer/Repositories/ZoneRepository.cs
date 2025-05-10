@@ -18,14 +18,12 @@ namespace PiIrrigateServer.Repositories
     {
         private ILogger<IZoneRepository> logger;
         private IServiceScopeFactory serviceScopeFactory;
-        private readonly IiotDeviceManager iotDeviceManager;
 
         public ZoneRepository(ILogger<IZoneRepository> logger,
-                    IServiceScopeFactory serviceScopeFactory, IiotDeviceManager iotDeviceManager)
+                    IServiceScopeFactory serviceScopeFactory)
         {
             this.logger = logger;
             this.serviceScopeFactory = serviceScopeFactory;
-            this.iotDeviceManager = iotDeviceManager;
         }
         public async Task<bool> CreateZone(Zone zone)
         {
@@ -45,12 +43,6 @@ namespace PiIrrigateServer.Repositories
                 await dbContext.Zones.AddAsync(zone).ConfigureAwait(false);
                 await dbContext.SaveChangesAsync().ConfigureAwait(false);
 
-                // Create the IoT Hub device  
-
-                if (!await iotDeviceManager.CreateIotDevice(zone.ZoneId.ToString()))
-                {
-                    throw new Exception("Failed to create IoT device");
-                }
                 return true;
             }
             catch (ZoneAlreadyExistsException)

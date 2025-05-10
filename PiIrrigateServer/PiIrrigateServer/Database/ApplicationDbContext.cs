@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PiIrrigateServer.Models;
-using System.Reflection.Metadata;
 
 namespace PiIrrigateServer.Database
 {
@@ -19,16 +18,19 @@ namespace PiIrrigateServer.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Configure User -> Zone relationship
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Zones)
+                .WithOne(z => z.User)
+                .HasForeignKey(z => z.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure Zone -> Device relationship
             modelBuilder.Entity<Zone>()
                 .HasMany(z => z.Devices)
                 .WithOne(d => d.Zone)
                 .HasForeignKey(d => d.ZoneId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Device>()
-                .HasOne(d => d.Zone)
-                .WithMany(z => z.Devices)
-                .HasForeignKey(d => d.ZoneId);
         }
 
         public DbSet<User> Users { get; set; }

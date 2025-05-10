@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using PiIrrigateServer.Models;
+using System.Collections.Concurrent;
 
 namespace PiIrrigateServer.SignalR
 {
@@ -12,6 +13,22 @@ namespace PiIrrigateServer.SignalR
             this.hubContext = hubContext;
         }
 
+        private static readonly ConcurrentDictionary<string, string> zoneIdLiveData = new ConcurrentDictionary<string, string>();
+
+        public async Task CreateZoneGroup()
+        {
+            var zoneId = Guid.NewGuid().ToString();
+            // Add the connection to the group
+            await Groups.AddToGroupAsync(Context.ConnectionId, zoneId);
+            // Store the connection ID and zone ID in the dictionary
+            zoneIdLiveData.TryAdd(Context.ConnectionId, zoneId);
+            await Clients.Caller.SendAsync("ZoneGroupCreated", zoneId);
+        }
+
+        public override async Task OnConnectedAsync()
+        {
+            await Clients.Others.SendAsync("Method1", $"{Context.ConnectionId} has joined");
+        }
         // Clients join a group based on ZoneId
         public async Task JoinZoneGroup(Guid zoneId)
         {

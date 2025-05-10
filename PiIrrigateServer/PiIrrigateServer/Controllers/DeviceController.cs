@@ -41,7 +41,6 @@ namespace PiIrrigateServer.Controllers
                     Mac = register.Mac,
                     Name = register.Name,
                     Location = register.Location,
-                    Owner = register.Owner,
                     Description = register.Description,
                     IsRegistered = false
                 };
@@ -53,13 +52,6 @@ namespace PiIrrigateServer.Controllers
                     return StatusCode(500, "Failed to save the device to the database.");
                 }
 
-                // Retrieve the connection string for the IoT Hub device  
-                var connectionString = await deviceManager.GetDeviceConnectionString(register.ZoneId.ToString());
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    return StatusCode(500, "Failed to retrieve the IoT Hub device connection string.");
-                }
-
                 // Update the device as registered  
                 newDevice.IsRegistered = true;
                 var updated = await deviceRepository.UpdateAsync(newDevice);
@@ -69,7 +61,7 @@ namespace PiIrrigateServer.Controllers
                 }
 
                 // Return success response with the connection string  
-                return Ok(new { ConnectionString = connectionString });
+                return Ok(new { deviceId = newDevice.Mac });
             }
             catch (Exception ex)
             {

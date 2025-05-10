@@ -12,8 +12,8 @@ using PiIrrigateServer.Database;
 namespace PiIrrigateServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250427144945_AddedZones")]
-    partial class AddedZones
+    [Migration("20250510155938_AddZoneConnectionString")]
+    partial class AddZoneConnectionString
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,9 +40,6 @@ namespace PiIrrigateServer.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Owner")
                         .HasColumnType("text");
 
                     b.Property<Guid>("ZoneId")
@@ -93,10 +90,18 @@ namespace PiIrrigateServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ConnectionString")
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("ZoneId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Zones");
                 });
@@ -110,6 +115,21 @@ namespace PiIrrigateServer.Migrations
                         .IsRequired();
 
                     b.Navigation("Zone");
+                });
+
+            modelBuilder.Entity("PiIrrigateServer.Models.Zone", b =>
+                {
+                    b.HasOne("PiIrrigateServer.Models.User", "User")
+                        .WithMany("Zones")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PiIrrigateServer.Models.User", b =>
+                {
+                    b.Navigation("Zones");
                 });
 
             modelBuilder.Entity("PiIrrigateServer.Models.Zone", b =>

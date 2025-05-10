@@ -39,9 +39,6 @@ namespace PiIrrigateServer.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<string>("Owner")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("ZoneId")
                         .HasColumnType("uuid");
 
@@ -90,10 +87,18 @@ namespace PiIrrigateServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ConnectionString")
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("ZoneId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Zones");
                 });
@@ -107,6 +112,21 @@ namespace PiIrrigateServer.Migrations
                         .IsRequired();
 
                     b.Navigation("Zone");
+                });
+
+            modelBuilder.Entity("PiIrrigateServer.Models.Zone", b =>
+                {
+                    b.HasOne("PiIrrigateServer.Models.User", "User")
+                        .WithMany("Zones")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PiIrrigateServer.Models.User", b =>
+                {
+                    b.Navigation("Zones");
                 });
 
             modelBuilder.Entity("PiIrrigateServer.Models.Zone", b =>

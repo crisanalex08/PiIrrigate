@@ -12,8 +12,8 @@ using PiIrrigateServer.Database;
 namespace PiIrrigateServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250427111637_AddDeviceRepo")]
-    partial class AddDeviceRepo
+    [Migration("20250510150604_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,9 +27,8 @@ namespace PiIrrigateServer.Migrations
 
             modelBuilder.Entity("PiIrrigateServer.Models.Device", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("Mac")
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -40,17 +39,15 @@ namespace PiIrrigateServer.Migrations
                     b.Property<string>("Location")
                         .HasColumnType("text");
 
-                    b.Property<string>("Mac")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<string>("Owner")
-                        .HasColumnType("text");
+                    b.Property<Guid>("ZoneId")
+                        .HasColumnType("uuid");
 
-                    b.HasKey("Id");
+                    b.HasKey("Mac");
+
+                    b.HasIndex("ZoneId");
 
                     b.ToTable("Devices");
                 });
@@ -85,6 +82,56 @@ namespace PiIrrigateServer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("PiIrrigateServer.Models.Zone", b =>
+                {
+                    b.Property<Guid>("ZoneId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ZoneId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Zones");
+                });
+
+            modelBuilder.Entity("PiIrrigateServer.Models.Device", b =>
+                {
+                    b.HasOne("PiIrrigateServer.Models.Zone", "Zone")
+                        .WithMany("Devices")
+                        .HasForeignKey("ZoneId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Zone");
+                });
+
+            modelBuilder.Entity("PiIrrigateServer.Models.Zone", b =>
+                {
+                    b.HasOne("PiIrrigateServer.Models.User", "User")
+                        .WithMany("Zones")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PiIrrigateServer.Models.User", b =>
+                {
+                    b.Navigation("Zones");
+                });
+
+            modelBuilder.Entity("PiIrrigateServer.Models.Zone", b =>
+                {
+                    b.Navigation("Devices");
                 });
 #pragma warning restore 612, 618
         }

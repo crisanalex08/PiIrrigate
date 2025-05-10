@@ -19,8 +19,6 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "ssr": false,
-          "prerender": false,
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "dist/client-app",
@@ -40,12 +38,7 @@
               "@angular/material/prebuilt-themes/cyan-orange.css",
               "src/styles.scss"
             ],
-            "scripts": [],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            "scripts": []
           },
           "configurations": {
             "production": {

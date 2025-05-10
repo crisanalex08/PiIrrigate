@@ -9,14 +9,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
-  selector: 'app-home',
-  imports: [MatSlideToggleModule,
-    LandingComponent,
-    RouterOutlet,
-    MatToolbarModule, MatSidenavModule, 
-    MatIconModule, MatButtonModule, 
-    MatMenuModule, RouterLink, MatButtonModule],
-  template: `
+    selector: 'app-home',
+    imports: [MatSlideToggleModule,
+        LandingComponent,
+        RouterOutlet,
+        MatToolbarModule, MatSidenavModule,
+        MatIconModule, MatButtonModule,
+        MatMenuModule, RouterLink, MatButtonModule],
+    template: `
     <mat-toolbar color="primary">
     <button type="button" mat-icon-button (click)="drawer.toggle()">
         <mat-icon>menu</mat-icon>
@@ -55,12 +55,20 @@ import { MatMenuModule } from '@angular/material/menu';
 
 </mat-drawer-container>
   `,
-  styles: ``
+    styles: `.button-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+mat-drawer-container {
+    height: 100vh;
+}`
 })
 export class HomeComponent {
-  title = 'ClientApp';
-  systemStatusColor='red';
+    title = 'ClientApp';
+    systemStatusColor = 'red';
 
-  
-  logout(){}
+
+    logout() { }
 }

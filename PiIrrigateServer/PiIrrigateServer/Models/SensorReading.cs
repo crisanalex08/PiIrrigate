@@ -9,5 +9,12 @@
         public double Humidity { get; set; } // Humidity
         public double SoilMoisture { get; set; } // Soil moisture
         public double Rainfall { get; set; } // Rainfall
+
+        public override string ToString()
+        {
+            return $"ZoneId: {ZoneId}, Mac: {Mac}, Timestamp: {Timestamp}, " +
+                   $"Temperature: {Temperature}°C, Humidity: {Humidity}%, " +
+                   $"SoilMoisture: {SoilMoisture}%, Rainfall: {Rainfall}mm";
+        }
     }
 }

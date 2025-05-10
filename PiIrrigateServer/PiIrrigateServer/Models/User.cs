@@ -13,6 +13,6 @@ namespace PiIrrigateServer.Models
         public DateTime UpdatedAt { get; set; }
 
         // Navigation Properties
-        //public List<Device>? Devices { get; set; } // User's registered Raspberry Pi devices
+        public ICollection<Zone> Zones { get; set; } = new List<Zone>();
     }
 }

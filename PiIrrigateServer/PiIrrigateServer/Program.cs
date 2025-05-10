@@ -1,5 +1,6 @@
 using PiIrrigateServer.Database;
 using PiIrrigateServer.Managers;
+using PiIrrigateServer.Mock;
 using PiIrrigateServer.Models;
 using PiIrrigateServer.Repositories;
 using PiIrrigateServer.Services;
@@ -14,7 +15,8 @@ builder.Services.AddCors(options =>
     {
         builder.WithOrigins("http://localhost:4200") // Allow Angular app
                .AllowAnyHeader()
-               .AllowAnyMethod();
+               .AllowAnyMethod()
+                .AllowCredentials();
     });
 });
 builder.Services.AddControllers();
@@ -30,6 +32,8 @@ builder.Services.AddScoped<IZoneRepository, ZoneRepository>();
 builder.Services.AddScoped<IiotDeviceManager, IotDeviceManager>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddSingleton<DataSenderMock>();
+builder.Services.AddSingleton<C2DMessageSenderManager>();
 
 builder.Services.Configure<IoTHubConfiguraiton>(builder.Configuration.GetSection("IotHubConfiguration"));
 builder.Services.AddHostedService<IoTHubDataManager>();
@@ -54,5 +58,13 @@ app.UseEndpoints(endpoints =>
 });
 
 app.MapControllers();
+
+//// Resolve the DataSenderMock service
+//var dataSenderMock = app.Services.GetRequiredService<DataSenderMock>();
+
+//// Start sending mock data in a background task
+//var cancellationTokenSource = new CancellationTokenSource();
+//_ = Task.Run(() => dataSenderMock.StartSendingMockData(cancellationTokenSource.Token));
+
 
 app.Run();

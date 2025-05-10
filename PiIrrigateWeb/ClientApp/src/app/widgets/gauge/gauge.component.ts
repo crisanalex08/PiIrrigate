@@ -7,7 +7,8 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
   styleUrl: './gauge.component.css'
 })
 export class GaugeComponent implements OnChanges {
-  @Input() moistureLevel: number = 81;
+  @Input() value: number = 0;
+  @Input() unit: string = "%";
   
   // SVG parameters
   size: number = 200;
@@ -26,7 +27,7 @@ export class GaugeComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['moistureLevel']) {
+    if (changes['value']) {
       this.calculateCircleProperties();
     }
   }
@@ -34,13 +35,13 @@ export class GaugeComponent implements OnChanges {
   private calculateCircleProperties(): void {
     this.radius = (this.size - this.strokeWidth) / 2;
     this.circumference = 2 * Math.PI * this.radius;
-    this.dashoffset = this.circumference * (1 - this.moistureLevel / 100);
+    this.dashoffset = this.circumference * (1 - this.value / 100);
   }
 
   // For the demo slider
   updateMoistureLevel(event: Event): void {
     const value = parseInt((event.target as HTMLInputElement).value);
-    this.moistureLevel = Math.min(100, Math.max(0, value || 0));
+    this.value = Math.min(100, Math.max(0, value || 0));
     this.calculateCircleProperties();
   }
 }
