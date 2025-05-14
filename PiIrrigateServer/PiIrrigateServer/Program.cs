@@ -1,3 +1,5 @@
+using Microsoft.Azure.Devices;
+using Microsoft.EntityFrameworkCore;
 using PiIrrigateServer.Database;
 using PiIrrigateServer.Managers;
 using PiIrrigateServer.Mock;
@@ -24,7 +26,9 @@ builder.Services.AddSignalR();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle  
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<ApplicationDbContext>();
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
@@ -32,10 +36,12 @@ builder.Services.AddScoped<IZoneRepository, ZoneRepository>();
 builder.Services.AddScoped<IiotDeviceManager, IotDeviceManager>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddSingleton<IDataManager, DataManager>();
 builder.Services.AddSingleton<DataSenderMock>();
 builder.Services.AddSingleton<C2DMessageSenderManager>();
 
 builder.Services.Configure<IoTHubConfiguraiton>(builder.Configuration.GetSection("IotHubConfiguration"));
+
 builder.Services.AddHostedService<IoTHubDataManager>();
 var app = builder.Build();
 
@@ -60,11 +66,11 @@ app.UseEndpoints(endpoints =>
 app.MapControllers();
 
 //// Resolve the DataSenderMock service
-//var dataSenderMock = app.Services.GetRequiredService<DataSenderMock>();
+var dataSenderMock = app.Services.GetRequiredService<DataSenderMock>();
 
-//// Start sending mock data in a background task
-//var cancellationTokenSource = new CancellationTokenSource();
-//_ = Task.Run(() => dataSenderMock.StartSendingMockData(cancellationTokenSource.Token));
+// Start sending mock data in a background task
+var cancellationTokenSource = new CancellationTokenSource();
+_ = Task.Run(() => dataSenderMock.StartSendingMockData(cancellationTokenSource.Token));
 
 
 app.Run();

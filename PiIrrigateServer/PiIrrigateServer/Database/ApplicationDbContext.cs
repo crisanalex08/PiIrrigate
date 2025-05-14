@@ -36,5 +36,6 @@ namespace PiIrrigateServer.Database
         public DbSet<User> Users { get; set; }
         public DbSet<Device> Devices { get; set; }
         public DbSet<Zone> Zones { get; set; }
+        public DbSet<SensorReading> SensorReadings { get; set; }
     }
 }

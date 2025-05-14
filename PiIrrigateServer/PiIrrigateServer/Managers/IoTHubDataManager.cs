@@ -10,6 +10,7 @@ namespace PiIrrigateServer.Managers
     {
         private readonly ILogger<IoTHubDataManager> logger;
         private readonly IServiceScopeFactory serviceScopeFactory;
+        private readonly IDataManager dataManager;
         private readonly string eventHubConnectionstring;
         private readonly string eventHubName;
         private readonly string consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
@@ -17,10 +18,13 @@ namespace PiIrrigateServer.Managers
         public Dictionary<string, Guid> macZoneDict { get; set; }
 
         public IoTHubDataManager(ILogger<IoTHubDataManager> logger,
-            IOptions<IoTHubConfiguraiton> options, IServiceScopeFactory serviceScopeFactory)
+            IOptions<IoTHubConfiguraiton> options,
+            IServiceScopeFactory serviceScopeFactory,
+            IDataManager dataManager)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.serviceScopeFactory = serviceScopeFactory;
+            this.dataManager = dataManager;
             if (options == null) throw new ArgumentNullException(nameof(options));
 
             eventHubConnectionstring = options.Value.EventHubConnectionString
@@ -41,7 +45,7 @@ namespace PiIrrigateServer.Managers
                 logger.LogWarning("IoTHubDataManager failed to start.");
             }
         }
-            public async Task ExecuteAsync(CancellationToken cancellationToken)
+        public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             logger.LogInformation("Starting IoTHubDataManager...");
 
@@ -65,7 +69,7 @@ namespace PiIrrigateServer.Managers
                     {
                         var data = partitionEvent.Data;
                         var sensorReading = GetReadingFromEventData(data);
-                        logger.LogInformation($"Telemetry received: {sensorReading}");
+                        await dataManager.HandleDataMessage(sensorReading);
                     }
                 }
             }

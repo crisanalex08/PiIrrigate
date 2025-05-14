@@ -53,7 +53,7 @@ namespace PiIrrigateServer.Controllers
                     return Conflict("A zone with the same name already exists.");
                 }
 
-                return Ok(new { ZoneId = newZone.ZoneId });
+                return Ok(new { ZoneId = newZone.ZoneId, ConnectionString = newZone.ConnectionString });
             }
             catch (Exception ex)
             {

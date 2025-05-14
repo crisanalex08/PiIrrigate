@@ -1,10 +1,13 @@
-﻿namespace PiIrrigateServer.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PiIrrigateServer.Models
 {
     public class SensorReading
     {
+        [Key]
+        public DateTime Timestamp { get; set; } // Timestamp of the reading
         public Guid ZoneId { get; set; } // Unique identifier for the zone
         public string Mac { get; set; } // Unique identifier for the device
-        public DateTime Timestamp { get; set; } // Timestamp of the reading
         public double Temperature { get; set; } // Temperature
         public double Humidity { get; set; } // Humidity
         public double SoilMoisture { get; set; } // Soil moisture

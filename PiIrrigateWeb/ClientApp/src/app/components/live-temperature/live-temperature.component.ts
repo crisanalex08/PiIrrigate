@@ -11,10 +11,10 @@ import { GaugeComponent } from '../../widgets/gauge/gauge.component';
   template: `
       <app-gauge 
         [value]="telemetryData?.temperature || 0" 
-        [filledColor]="'#FF5252'" 
-        [emptyColor]="'#FFCDD2'" 
+        [filledColor]="'#FF5252'"
+        [emptyColor]="'#FFCDD2'"
         [gaugeLabel]="'Temperature (°C)'"
-        [unit]="'°C'" 
+        [unit]="'°C'"
         ></app-gauge>
   `,
   styles: ``
