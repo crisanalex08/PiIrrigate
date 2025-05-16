@@ -9,6 +9,8 @@ namespace PiIrrigateServer.Managers
     public interface IDataManager
     {
         public Task HandleDataMessage(SensorReading sensorReading);
+        public Task<IEnumerable<SensorReading>> GetStoredData (DateTime from, DateTime to, Guid zoneId);
+        public Task<IEnumerable<SensorReading>> GetAllStoredData (Guid zoneId);
     }
     public class DataManager : IDataManager
     {
@@ -19,6 +21,21 @@ namespace PiIrrigateServer.Managers
         {
             this.hubContext = hubContext;
             this.dbContext = dbContextFactory.CreateDbContext();
+        }
+
+        public async Task<IEnumerable<SensorReading>> GetAllStoredData(Guid zoneId)
+        {
+            return await dbContext.SensorReadings
+                .Where(sr => sr.ZoneId == zoneId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<SensorReading>> GetStoredData(DateTime from, DateTime to, Guid zoneId)
+        {
+            return await dbContext.SensorReadings
+                .Where(sr => sr.ZoneId == zoneId && sr.Timestamp >= from && sr.Timestamp <= to)
+                .OrderByDescending(sr => sr.Timestamp)
+                .ToListAsync();
         }
 
         public async Task HandleDataMessage(SensorReading sensorReading)

@@ -22,7 +22,7 @@ namespace PiIrrigateServer.Controllers
             this.zoneRepository = zoneRepository;
         }
 
-        [HttpPost("register")]
+        [HttpPost("api/register")]
         public async Task<IActionResult> RegisterDevice([FromBody] RegisterDeviceRequest register)
         {
             try
@@ -69,5 +69,19 @@ namespace PiIrrigateServer.Controllers
                 return StatusCode(500, "An internal server error occurred.");
             }
         }
+
+        [HttpGet("api/getAllDevice")]
+        public async Task<IActionResult> GetDevices() {
+            try
+            {
+                var devices = await deviceRepository.GetAllAsync();
+                return Ok(devices);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, e.Message);
+                return Problem(e.Message);
+            }
+        } 
     }
 }

@@ -25,7 +25,7 @@ namespace PiIrrigateServer.Controllers
             this.serviceConnectionString = options.Value.ServiceConnectionString;
         }
 
-        [HttpPost("sendMessage")]
+        [HttpPost("api/sendMessage")]
         public async Task<IActionResult> SendC2DMessage(C2DMessageRequest c2DMessageRequest)
         {
             try

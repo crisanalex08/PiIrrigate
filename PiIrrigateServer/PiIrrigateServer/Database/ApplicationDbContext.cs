@@ -11,9 +11,7 @@ namespace PiIrrigateServer.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            DotNetEnv.Env.Load();
-            var connectionString = DotNetEnv.Env.GetString("DB_CONNECTION_STRING");
-            optionsBuilder.UseNpgsql(connectionString);
+           
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
