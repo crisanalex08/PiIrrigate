@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Win32;
 using PiIrrigateServer.Database;
 using PiIrrigateServer.Exceptions;
-using PiIrrigateServer.Managers;
 using PiIrrigateServer.Models;
 
 namespace PiIrrigateServer.Repositories
@@ -10,9 +8,12 @@ namespace PiIrrigateServer.Repositories
     public interface IZoneRepository
     {
         public Task<bool> CreateZone(Zone zone);
-        public Task<bool> UpdateZone(Guid Id, string Name);
+        public Task<bool> UpdateZone(Guid Id, string Name, Guid userId);
         public Task<bool> DeleteZone(Guid Id);
         public Task<Zone> GetZoneById(Guid Id);
+        public Task<Zone> GetZoneByName(string name);
+        public Task<IEnumerable<Zone>> GetAllByUserId(Guid Id);
+
     }
     public class ZoneRepository : IZoneRepository
     {
@@ -88,6 +89,34 @@ namespace PiIrrigateServer.Repositories
             }
         }
 
+        public async Task<IEnumerable<Zone>> GetAllByUserId(Guid Id)
+        {
+            try
+            {
+                using var scope = serviceScopeFactory.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                // Find the zone by ID
+                var zones = await dbContext.Zones.Where(z => z.UserId == Id).ToListAsync();
+                if (zones.Count == 0)
+                {
+                    throw new ZoneNotFoundException($"Zone with ID {Id} not found");
+                }
+
+                return zones;
+            }
+            catch (ZoneNotFoundException ex)
+            {
+                logger.LogWarning(ex, "Zone with ID {ZoneId} not found", Id);
+                throw;
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "An error occurred while retrieving a zone with ID {ZoneId}", Id);
+                throw;
+            }
+        }
+
         public async Task<Zone> GetZoneById(Guid Id)
         {
             try
@@ -116,7 +145,35 @@ namespace PiIrrigateServer.Repositories
             }
         }
 
-        public async Task<bool> UpdateZone(Guid Id, string Name)
+        public async Task<Zone> GetZoneByName(string name)
+        {
+            try
+            {
+                using var scope = serviceScopeFactory.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                // Find the zone by ID
+                var zone = await dbContext.Zones.FirstOrDefaultAsync(z => z.Name == name).ConfigureAwait(false);
+                if (zone == null)
+                {
+                    throw new ZoneNotFoundException($"Zone with name {name} not found");
+                }
+
+                return zone;
+            }
+            catch (ZoneNotFoundException ex)
+            {
+                logger.LogWarning(ex, "Zone with name {ZoneId} not found", name);
+                throw;
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "An error occurred while retrieving a zone with name {ZoneId}", name);
+                throw;
+            }
+        }
+
+        public async Task<bool> UpdateZone(Guid Id, string Name, Guid userId)
         {
             try
             {
@@ -132,6 +189,7 @@ namespace PiIrrigateServer.Repositories
 
                 // Update the zone's name
                 zone.Name = Name;
+                zone.UserId = userId;
                 dbContext.Zones.Update(zone);
                 await dbContext.SaveChangesAsync().ConfigureAwait(false);
                 return true;

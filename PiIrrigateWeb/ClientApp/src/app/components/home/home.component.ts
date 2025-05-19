@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { LandingComponent } from '../landing/landing.component';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-home',
@@ -42,8 +43,8 @@ import { MatMenuModule } from '@angular/material/menu';
 <mat-drawer-container class="example-container" autosize>
     <mat-drawer #drawer class="example-sidenav" mode="side">
         <div class="button-container">
-            <button mat-button routerLink="dashboard">Dashboard</button>
-            <button mat-button routerLink="/zones">Zones</button>
+            <button mat-button [routerLink]="[{ outlets: { home: null } }]">Dashboard</button>
+            <button mat-button [routerLink]="[{ outlets: { home: 'zones' } }]">Zones</button>
             <button mat-button routerLink="/schedules">Schedules</button>
             <button mat-button routerLink="/history">History</button>
         </div>
@@ -69,6 +70,10 @@ export class HomeComponent {
     title = 'ClientApp';
     systemStatusColor = 'red';
 
+    constructor(private router: Router, private authService: AuthService) { }
 
-    logout() { }
+    logout() {
+        this.authService.logout();
+        this.router.navigate(['/login']);
+    }
 }

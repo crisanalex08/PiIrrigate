@@ -47,17 +47,18 @@ namespace PiIrrigateServer.Managers
         }
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            logger.LogInformation("Starting IoTHubDataManager...");
-
-            using var scope = serviceScopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            macZoneDict = dbContext.Devices.ToDictionary(d => d.Mac, d => d.ZoneId);
-
-            consumer = new EventHubConsumerClient(consumerGroup, eventHubConnectionstring, eventHubName);
-
             try
             {
+                logger.LogInformation("Starting IoTHubDataManager...");
+
+                using var scope = serviceScopeFactory.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                macZoneDict = dbContext.Devices.ToDictionary(d => d.Mac, d => d.ZoneId);
+
+                consumer = new EventHubConsumerClient(consumerGroup, eventHubConnectionstring, eventHubName);
+
+
                 await foreach (PartitionEvent partitionEvent in consumer.ReadEventsAsync(cancellationToken))
                 {
                     if (macZoneDict.Count() == 0)

@@ -5,6 +5,7 @@ import { LandingComponent } from './components/landing/landing.component';
 import { RegisterComponent } from './components/register/register.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { HomeComponent } from './components/home/home.component';
+import { ZonesComponent } from './components/zones/zones.component';
 
 export const routes: Routes = [
     {
@@ -16,11 +17,16 @@ export const routes: Routes = [
                 component: DashboardComponent,
                 outlet: "home",
             },
+            {
+                path: 'zones',
+                component: ZonesComponent,
+                outlet: "home",
+            },
         ]
     },
     {
-        path: "login",
-        component: LoginComponent,
+        path: '',
+        component: HomeComponent,
     },
     {
         path: "register",
@@ -29,6 +35,10 @@ export const routes: Routes = [
     {
         path: "landing",
         component: LandingComponent,
+    },
+    {
+        path: "login",
+        component: LoginComponent,
     },
     // {
     //     path: '**', 

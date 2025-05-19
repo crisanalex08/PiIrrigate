@@ -7,7 +7,6 @@ using PiIrrigateServer.Services;
 namespace PiIrrigateServer.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
     public class C2DController : ControllerBase
     {
         private readonly ILogger<C2DController> logger;
@@ -25,7 +24,7 @@ namespace PiIrrigateServer.Controllers
             this.serviceConnectionString = options.Value.ServiceConnectionString;
         }
 
-        [HttpPost("api/sendMessage")]
+        [HttpPost("c2d/sendMessage")]
         public async Task<IActionResult> SendC2DMessage(C2DMessageRequest c2DMessageRequest)
         {
             try

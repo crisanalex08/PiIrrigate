@@ -5,7 +5,6 @@ using PiIrrigateServer.Services;
 namespace PiIrrigateServer.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
     public class UserManagementController : ControllerBase
     {
         private readonly ILogger<UserManagementController> logger;
@@ -18,13 +17,13 @@ namespace PiIrrigateServer.Controllers
             this.userService = userService;
         }
 
-        [HttpPost("register")]
+        [HttpPost("user/register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest register)
         {
             try
             {
-                var jwt = await userService.RegisterUser(register);
-                return Ok(jwt);
+                var authResult = await userService.RegisterUser(register);
+                return Ok(authResult);
             }
             catch (Exception e)
             {
@@ -33,13 +32,13 @@ namespace PiIrrigateServer.Controllers
             }
         }
 
-        [HttpPost("login")]
+        [HttpPost("user/login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var result = await userService.LoginUser(request);
-            if (!result.Success) return Unauthorized(result.Message);
+            var authResult = await userService.LoginUser(request);
+            if (!authResult.Success) return Unauthorized(authResult.Message);
 
-            return Ok(new { Token = result.Token, Message = result.Message });
+            return Ok(authResult);
         }
 
     }

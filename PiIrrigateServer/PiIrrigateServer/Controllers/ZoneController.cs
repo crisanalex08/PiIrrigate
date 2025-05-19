@@ -2,30 +2,32 @@
 using PiIrrigateServer.Managers;
 using PiIrrigateServer.Models;
 using PiIrrigateServer.Repositories;
+using PiIrrigateServer.Services;
 
 namespace PiIrrigateServer.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class ZoneController :ControllerBase
+    public class ZoneController : ControllerBase
     {
         private readonly ILogger<ZoneController> logger;
         private readonly IZoneRepository zoneRepository;
         private readonly IiotDeviceManager iotDeviceManager;
+        private readonly C2DMessageSenderManager c2DMessageSenderManager;
 
-        public ZoneController(ILogger<ZoneController> logger, IZoneRepository zoneRepository, IiotDeviceManager iotDeviceManager)
+        public ZoneController(ILogger<ZoneController> logger, IZoneRepository zoneRepository, IiotDeviceManager iotDeviceManager, C2DMessageSenderManager c2DMessageSenderManager)
         {
             this.logger = logger;
             this.zoneRepository = zoneRepository;
             this.iotDeviceManager = iotDeviceManager;
+            this.c2DMessageSenderManager = c2DMessageSenderManager;
         }
 
-        [HttpPost("create")]
+        [HttpPost("zone/create")]
         public async Task<IActionResult> CreateZone([FromBody] CreateZoneRequest register)
         {
             try
             {
-                Zone newZone = new Zone
+                Zone newZone = new()
                 {
                     ZoneId = Guid.NewGuid(), // Generate a new GUID for the zone ID
                     Name = register.ZoneName,
@@ -54,6 +56,57 @@ namespace PiIrrigateServer.Controllers
                 }
 
                 return Ok(new { ZoneId = newZone.ZoneId, ConnectionString = newZone.ConnectionString });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error creating zone");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet("zone/{userId}/zones")]
+        public async Task<IActionResult> GetAllZones(Guid userId)
+        {
+            try
+            {
+                return Ok(await zoneRepository.GetAllByUserId(userId));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error creating zone");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPut("zone/activate")]
+        public async Task<IActionResult> ActivateZone(ActivateZoneRequest request)
+        {
+            try
+            {
+                var zone = await zoneRepository.GetZoneByName(request.ActivationCode);
+
+                foreach (var device in zone.Devices)
+                {
+                    device.IsRegistered = true;
+                }
+                await zoneRepository.UpdateZone(zone.ZoneId, request.ZoneName, request.UserId);
+
+                var messageSender = c2DMessageSenderManager.GetC2DMessageSender(zone.ConnectionString);
+
+                foreach (var device in zone.Devices)
+                {
+                    var methodCall = new C2DMethodCall()
+                    {
+                        DeviceId = device.Mac,
+                        Method = "ActivateDevice",
+                        Params = new[]
+                        {
+                            new MethodParams { Name = "RefreshInterval", Value = request.RefreshInterval.ToString() }
+                        }
+                    };
+                    await messageSender.SendC2DMessage(zone.ZoneId.ToString(), methodCall);
+                }
+                return Ok("Zone activated");
             }
             catch (Exception ex)
             {

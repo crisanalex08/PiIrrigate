@@ -9,8 +9,10 @@ namespace PiIrrigateServer.Managers
     public interface IDataManager
     {
         public Task HandleDataMessage(SensorReading sensorReading);
-        public Task<IEnumerable<SensorReading>> GetStoredData (DateTime from, DateTime to, Guid zoneId);
-        public Task<IEnumerable<SensorReading>> GetAllStoredData (Guid zoneId);
+        public Task<IEnumerable<SensorReading>> GetTimedZoneData (DateTime from, DateTime to, Guid zoneId);
+        public Task<IEnumerable<SensorReading>> GetTimedDeviceData (DateTime from, DateTime to, Guid zoneId, string deviceId);
+        public Task<IEnumerable<SensorReading>> GetAllZoneData (Guid zoneId);
+        public Task<IEnumerable<SensorReading>> GetAllDeviceData (Guid zoneId, string DeviceId);
     }
     public class DataManager : IDataManager
     {
@@ -23,14 +25,29 @@ namespace PiIrrigateServer.Managers
             this.dbContext = dbContextFactory.CreateDbContext();
         }
 
-        public async Task<IEnumerable<SensorReading>> GetAllStoredData(Guid zoneId)
+        public async Task<IEnumerable<SensorReading>> GetAllDeviceData(Guid zoneId, string deviceId)
+        {
+            return await dbContext.SensorReadings
+                .Where(sr => sr.ZoneId == zoneId && sr.Mac == deviceId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<SensorReading>> GetAllZoneData(Guid zoneId)
         {
             return await dbContext.SensorReadings
                 .Where(sr => sr.ZoneId == zoneId)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<SensorReading>> GetStoredData(DateTime from, DateTime to, Guid zoneId)
+        public async Task<IEnumerable<SensorReading>> GetTimedDeviceData(DateTime from, DateTime to, Guid zoneId, string deviceId)
+        {
+            return await dbContext.SensorReadings
+                .Where(sr => sr.ZoneId == zoneId && sr.Timestamp >= from && sr.Timestamp <= to && sr.Mac == deviceId)
+                .OrderByDescending(sr => sr.Timestamp)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<SensorReading>> GetTimedZoneData(DateTime from, DateTime to, Guid zoneId)
         {
             return await dbContext.SensorReadings
                 .Where(sr => sr.ZoneId == zoneId && sr.Timestamp >= from && sr.Timestamp <= to)

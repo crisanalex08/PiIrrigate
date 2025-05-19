@@ -6,7 +6,6 @@ using PiIrrigateServer.Repositories;
 namespace PiIrrigateServer.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
     public class DeviceController : ControllerBase
     {
         private readonly ILogger<UserManagementController> logger;
@@ -22,7 +21,7 @@ namespace PiIrrigateServer.Controllers
             this.zoneRepository = zoneRepository;
         }
 
-        [HttpPost("api/register")]
+        [HttpPost("device/register")]
         public async Task<IActionResult> RegisterDevice([FromBody] RegisterDeviceRequest register)
         {
             try
@@ -70,11 +69,25 @@ namespace PiIrrigateServer.Controllers
             }
         }
 
-        [HttpGet("api/getAllDevice")]
-        public async Task<IActionResult> GetDevices() {
+        [HttpGet("device/user/{userId}/devices")]
+        public async Task<IActionResult> GetUserDevices(Guid userId) {
             try
             {
-                var devices = await deviceRepository.GetAllAsync();
+                var devices = await deviceRepository.GetAllUserDevicesAsync(userId);
+                return Ok(devices);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, e.Message);
+                return Problem(e.Message);
+            }
+        } 
+        
+        [HttpGet("device/{zoneId}/devices")]
+        public async Task<IActionResult> GetDevices(Guid zoneId) {
+            try
+            {
+                var devices = await deviceRepository.GetAllAsync(zoneId);
                 return Ok(devices);
             }
             catch (Exception e)

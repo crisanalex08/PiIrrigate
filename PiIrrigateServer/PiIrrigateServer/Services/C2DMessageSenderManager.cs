@@ -30,7 +30,7 @@ namespace PiIrrigateServer.Services
             _serviceClient = ServiceClient.CreateFromConnectionString(deviceConnectionString);
         }
 
-        public async Task<string> SendC2DMessage(string deviceId, C2DMethodCall methodCall)
+        public async Task<string> SendC2DMessage(string hubDeviceId, C2DMethodCall methodCall)
         {
             var messagePayload = JsonSerializer.Serialize(new
             {
@@ -47,7 +47,7 @@ namespace PiIrrigateServer.Services
             try
             {
                 TimeSpan operationTimeout = TimeSpan.FromSeconds(10);
-                await _serviceClient.SendAsync(deviceId, message, operationTimeout);
+                await _serviceClient.SendAsync(hubDeviceId, message, operationTimeout);
                 return message.MessageId;
             }
             catch (Exception)

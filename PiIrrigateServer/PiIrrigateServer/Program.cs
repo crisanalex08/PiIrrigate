@@ -45,13 +45,8 @@ builder.Services.Configure<IoTHubConfiguraiton>(builder.Configuration.GetSection
 builder.Services.AddHostedService<IoTHubDataManager>();
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.  
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 app.UseRouting(); // Add this line to configure routing middleware  
@@ -65,12 +60,12 @@ app.UseEndpoints(endpoints =>
 
 app.MapControllers();
 
-//// Resolve the DataSenderMock service
-var dataSenderMock = app.Services.GetRequiredService<DataSenderMock>();
+////// Resolve the DataSenderMock service
+//var dataSenderMock = app.Services.GetRequiredService<DataSenderMock>();
 
-// Start sending mock data in a background task
-var cancellationTokenSource = new CancellationTokenSource();
-_ = Task.Run(() => dataSenderMock.StartSendingMockData(cancellationTokenSource.Token));
+//// Start sending mock data in a background task
+//var cancellationTokenSource = new CancellationTokenSource();
+//_ = Task.Run(() => dataSenderMock.StartSendingMockData(cancellationTokenSource.Token));
 
 
 app.Run();

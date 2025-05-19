@@ -9,7 +9,8 @@ namespace PiIrrigateServer.Repositories
     {
         Task<Device> GetByIdAsync(Guid id);
         Task<Device> GetByMacAsync(string mac);
-        Task<IEnumerable<Device>> GetAllAsync();
+        Task<IEnumerable<Device>> GetAllUserDevicesAsync(Guid userId);
+        Task<IEnumerable<Device>> GetAllAsync(Guid zoneId);
         Task<bool> CreateAsync(Device device);
         Task<bool> UpdateAsync(Device device);
         Task<bool> DeleteAsync(Guid id);
@@ -82,7 +83,7 @@ namespace PiIrrigateServer.Repositories
             }
         }
 
-        public async Task<IEnumerable<Device>> GetAllAsync()
+        public async Task<IEnumerable<Device>> GetAllUserDevicesAsync(Guid userId)
         {
             try
             {
@@ -90,7 +91,27 @@ namespace PiIrrigateServer.Repositories
                 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
                 // Fetch all devices as a list to ensure proper disposal of the DbContext  
-                var devices = await dbContext.Devices.ToListAsync().ConfigureAwait(false);
+                var devices = await dbContext.Devices.Where(d => d.Zone.UserId == userId)
+                    .ToListAsync().ConfigureAwait(false);
+                return devices;
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "An error occurred while fetching all devices.");
+                return Enumerable.Empty<Device>();
+            }
+        }
+
+        public async Task<IEnumerable<Device>> GetAllAsync(Guid zoneId)
+        {
+            try
+            {
+                using var scope = serviceScopeFactory.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                // Fetch all devices as a list to ensure proper disposal of the DbContext  
+                var devices = await dbContext.Devices.Where(d => d.ZoneId == zoneId)
+                    .ToListAsync().ConfigureAwait(false);
                 return devices;
             }
             catch (Exception e)

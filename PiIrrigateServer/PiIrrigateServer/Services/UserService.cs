@@ -93,7 +93,7 @@ namespace PiIrrigateServer.Services
 
             var token = jwtService.GenerateJwtToken(user);
 
-            return new AuthResult { Success = true, Token = token, Message = "Login successful" };
+            return new AuthResult { Success = true, Token = token, UserId = user.Id, Message = "Login successful" };
         }
 
         public Task<bool> UpdateUserProfileAsync(Guid userId, UpdateProfileRequest request)
