@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Devices;
+using Microsoft.Extensions.Options;
 using PiIrrigateServer.Models;
 using System.Text;
 using System.Text.Json;
@@ -8,15 +9,18 @@ namespace PiIrrigateServer.Services
     public class C2DMessageSenderManager
     {
         private readonly ILogger<C2DMessageSenderManager> logger;
+        private readonly IOptions<IoTHubConfiguraiton> iotHubConfig;
 
-        public C2DMessageSenderManager(ILogger<C2DMessageSenderManager> logger)
+        public C2DMessageSenderManager(ILogger<C2DMessageSenderManager> logger, 
+            IOptions<IoTHubConfiguraiton> iotHubConfig)
         {
             this.logger = logger;
+            this.iotHubConfig = iotHubConfig;
         }
 
-        public C2DMessageSender GetC2DMessageSender(string deviceConnectionString)
+        public C2DMessageSender GetC2DMessageSender()
         {
-            return new C2DMessageSender(deviceConnectionString);
+            return new C2DMessageSender(iotHubConfig.Value.ServiceConnectionString);
         }
     }
 
@@ -25,9 +29,9 @@ namespace PiIrrigateServer.Services
         private readonly ServiceClient _serviceClient;
         private bool _disposed = false; // To detect redundant calls
 
-        public C2DMessageSender(string deviceConnectionString)
+        public C2DMessageSender(string serviceConnectionString)
         {
-            _serviceClient = ServiceClient.CreateFromConnectionString(deviceConnectionString);
+            _serviceClient = ServiceClient.CreateFromConnectionString(serviceConnectionString);
         }
 
         public async Task<string> SendC2DMessage(string hubDeviceId, C2DMethodCall methodCall)

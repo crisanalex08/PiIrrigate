@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PiIrrigateServer.Exceptions;
 using PiIrrigateServer.Managers;
 using PiIrrigateServer.Models;
 using PiIrrigateServer.Repositories;
@@ -78,6 +79,27 @@ namespace PiIrrigateServer.Controllers
             }
         }
 
+
+        [HttpGet("zone/{zoneId}/connection-string")]
+        public async Task<IActionResult> GetZoneConnectionString(Guid zoneId)
+        {
+            try
+            {
+                Zone zone = await zoneRepository.GetZoneById(zoneId);                
+                return Ok(zone.ConnectionString);
+            }
+            catch (ZoneNotFoundException ex)
+            {
+                logger.LogWarning(ex, "Zone with ID {ZoneId} not found", zoneId);
+                return StatusCode(404, "Zone not found");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error fetching the connectionstring");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         [HttpPut("zone/activate")]
         public async Task<IActionResult> ActivateZone(ActivateZoneRequest request)
         {
@@ -91,21 +113,18 @@ namespace PiIrrigateServer.Controllers
                 }
                 await zoneRepository.UpdateZone(zone.ZoneId, request.ZoneName, request.UserId);
 
-                var messageSender = c2DMessageSenderManager.GetC2DMessageSender(zone.ConnectionString);
+                var messageSender = c2DMessageSenderManager.GetC2DMessageSender();
 
-                foreach (var device in zone.Devices)
+                var methodCall = new C2DMethodCall()
                 {
-                    var methodCall = new C2DMethodCall()
+                    DeviceId = zone.ZoneId.ToString(),
+                    Method = "ActivateDevice",
+                    Params = new[]
                     {
-                        DeviceId = device.Mac,
-                        Method = "ActivateDevice",
-                        Params = new[]
-                        {
                             new MethodParams { Name = "RefreshInterval", Value = request.RefreshInterval.ToString() }
                         }
-                    };
-                    await messageSender.SendC2DMessage(zone.ZoneId.ToString(), methodCall);
-                }
+                };
+                await messageSender.SendC2DMessage(zone.ZoneId.ToString(), methodCall);
                 return Ok("Zone activated");
             }
             catch (Exception ex)

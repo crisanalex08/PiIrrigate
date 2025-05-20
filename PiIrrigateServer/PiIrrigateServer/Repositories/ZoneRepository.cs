@@ -133,11 +133,6 @@ namespace PiIrrigateServer.Repositories
 
                 return zone;
             }
-            catch (ZoneNotFoundException ex)
-            {
-                logger.LogWarning(ex, "Zone with ID {ZoneId} not found", Id);
-                throw;
-            }
             catch (Exception e)
             {
                 logger.LogError(e, "An error occurred while retrieving a zone with ID {ZoneId}", Id);

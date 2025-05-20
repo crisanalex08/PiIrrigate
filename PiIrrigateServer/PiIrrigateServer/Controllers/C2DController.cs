@@ -21,7 +21,6 @@ namespace PiIrrigateServer.Controllers
             this.logger = logger;
             this.c2DMessageSenderManager = c2DMessageSenderManager;
             this.zones = zones;
-            this.serviceConnectionString = options.Value.ServiceConnectionString;
         }
 
         [HttpPost("c2d/sendMessage")]
@@ -29,7 +28,7 @@ namespace PiIrrigateServer.Controllers
         {
             try
             {
-                using (var sender = c2DMessageSenderManager.GetC2DMessageSender(serviceConnectionString))
+                using (var sender = c2DMessageSenderManager.GetC2DMessageSender())
                 {
                     var messageId = await sender.SendC2DMessage(c2DMessageRequest.ZoneId.ToString(), c2DMessageRequest.methodCall);
                     logger.LogInformation("Message sent");
