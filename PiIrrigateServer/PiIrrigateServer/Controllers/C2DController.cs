@@ -15,7 +15,6 @@ namespace PiIrrigateServer.Controllers
         private string serviceConnectionString;
 
         public C2DController(ILogger<C2DController> logger, C2DMessageSenderManager c2DMessageSenderManager,
-            IOptions<IoTHubConfiguraiton> options,
             IZoneRepository zones)
         {
             this.logger = logger;
