@@ -2,6 +2,8 @@
 #define LORA_RECEIVER_H
 
 #include <string>
+#include <sensor_data.h>
+
 
 class LoraReceiver {
 public:
@@ -15,7 +17,7 @@ public:
      *
      * @return std::string The received data as a string.
      */
-    std::string receiveSensorData();
+    bool receiveSensorData(LoRaPacket& outPacket);
 };
 
 #endif // LORA_RECEIVER_H

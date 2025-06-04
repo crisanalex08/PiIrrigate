@@ -1,6 +1,7 @@
 #include "LoraSender.h"
 #include <LoRa.h>
 #include <Arduino.h>
+#include <sensor_data.h>
 
 #define LORA_SS 18   // GPIO 18 for SS
 #define LORA_RST 23  // GPIO 23 for Reset
@@ -37,26 +38,26 @@ void LoraSender::sendSensorData(int temperature, int humidity, int soilMoisture,
     Serial.println("LoRa data sent: " + String(buffer));
 }
 
-void LoraSender::sendSensorDataWithAck(int packetCount, int temperature, int humidity, int soilMoisture, int rainLevel)
+void LoraSender::sendSensorDataWithAck(SensorData sensorData, int packetCount)
 {
-    char buffer[128];
+    LoRaPacket packet;
+    packet.packetCount = packetCount;
+    packet.sensorData = sensorData;
+    memcpy(packet.stationMac, station_mac, sizeof(station_mac));
 
-    snprintf(buffer, sizeof(buffer),
-             "C:%d, ID:%02X%02X%02X%02X%02X%02X, T:%d, H:%d, S:%d, R:%d\n",
-             packetCount, station_mac[0], station_mac[1], station_mac[2], station_mac[3], station_mac[4], station_mac[5],
-             temperature, humidity, soilMoisture, rainLevel);
+    const uint8_t *dataPtr = reinterpret_cast<const uint8_t *>(&packet);
+    size_t dataLen = sizeof(LoRaPacket);
 
     for (int attempt = 0; attempt < 3; attempt++)
-    { // Retry up to 3 times
-        // Begin LoRa packet
+    {
         LoRa.beginPacket();
-        LoRa.print(buffer);   // Send the formatted string
-        LoRa.endPacket(true); // Wait for acknowledgment
+        LoRa.write(dataPtr, dataLen); // Send binary data
+        LoRa.endPacket(true);
 
-        // Wait for acknowledgment
+        // Wait for acknowledgment (same as before)
         unsigned long startTime = millis();
         while (millis() - startTime < 2000)
-        { // 2-second timeout
+        {
             int packetSize = LoRa.parsePacket();
             if (packetSize > 0)
             {
@@ -68,14 +69,13 @@ void LoraSender::sendSensorDataWithAck(int packetCount, int temperature, int hum
                 if (ack == "ACK")
                 {
                     Serial.println("Acknowledgment received!");
-                    return; // Exit after successful acknowledgment
+                    return;
                 }
             }
         }
-
-        digitalWrite(LED_PIN, LOW);  // Turn off LED to indicate failure
-        delay(100);                  // Wait for 100ms
-        digitalWrite(LED_PIN, HIGH); // Turn on LED
+        digitalWrite(LED_PIN, LOW);
+        delay(100);
+        digitalWrite(LED_PIN, HIGH);
         Serial.println("No acknowledgment, retrying...");
     }
     Serial.println("Failed to send packet after 3 attempts");

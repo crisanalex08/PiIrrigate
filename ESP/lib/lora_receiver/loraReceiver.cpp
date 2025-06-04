@@ -1,6 +1,7 @@
 #include "LoraReceiver.h"
 #include <LoRa.h>
 #include <Arduino.h>
+#include <sensor_data.h>
 
 void LoraReceiver::init() {
     // Initialize the LoRa module
@@ -11,24 +12,18 @@ void LoraReceiver::init() {
     Serial.println("LoRa Receiver initialized");
 }
 
-std::string LoraReceiver::receiveSensorData() {
+bool LoraReceiver::receiveSensorData(LoRaPacket& outPacket) {
     int packetSize = LoRa.parsePacket();  // Check if a packet is available
-    if (packetSize > 0) {
-        char buffer[packetSize + 1];
-        int index = 0;
-
-        // Read the packet data
-        while (LoRa.available() && index < packetSize) {
-            buffer[index++] = (char)LoRa.read();
-        }
-        buffer[index] = '\0';  // Null-terminate the string
+    if (packetSize == sizeof(LoRaPacket)) {
+        // Read the binary packet directly into the struct
+        LoRa.readBytes(reinterpret_cast<uint8_t*>(&outPacket), sizeof(LoRaPacket));
 
         // Send acknowledgment
         LoRa.beginPacket();
         LoRa.print("ACK");
         LoRa.endPacket();
-        
-        return std::string(buffer);
+
+        return true;
     }
-    return "";
+    return false;
 }

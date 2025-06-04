@@ -2,6 +2,7 @@
 #define LORA_SENDER_H
 
 #include <string>
+#include <sensor_data.h>
 
 class LoraSender {
 public:
@@ -28,7 +29,7 @@ public:
      * @param soilMoisture The soil moisture value to send.
      * @param rainLevel The rain level value to send.
      */
-    void sendSensorDataWithAck(int packetCount, int temperature, int humidity, int soilMoisture, int rainLevel);
+    void sendSensorDataWithAck(SensorData sensorData, int packetCount);
 private:
     uint8_t station_mac[6];  // MAC address of the device
 };
