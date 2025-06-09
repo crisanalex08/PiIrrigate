@@ -1,8 +1,12 @@
 ﻿using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Consumer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using PiIrrigateServer.Database;
 using PiIrrigateServer.Models;
+using PiIrrigateServer.Repositories;
+using PiIrrigateServer.Services;
+using PiIrrigateServer.SignalR;
 
 namespace PiIrrigateServer.Managers
 {
@@ -10,21 +14,25 @@ namespace PiIrrigateServer.Managers
     {
         private readonly ILogger<IoTHubDataManager> logger;
         private readonly IServiceScopeFactory serviceScopeFactory;
-        private readonly IDataManager dataManager;
+        private readonly IHubContext<LiveDataHub> hubContext;
+        private readonly IDataRepository dataRepository;
         private readonly string eventHubConnectionstring;
         private readonly string eventHubName;
         private readonly string consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
         private EventHubConsumerClient consumer;
+
         public Dictionary<string, Guid> macZoneDict { get; set; }
 
         public IoTHubDataManager(ILogger<IoTHubDataManager> logger,
             IOptions<IoTHubConfiguraiton> options,
-            IServiceScopeFactory serviceScopeFactory,
-            IDataManager dataManager)
+            IServiceScopeFactory serviceScopeFactory, 
+            IHubContext<LiveDataHub> hubContext,
+            IDataRepository dataRepository)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.serviceScopeFactory = serviceScopeFactory;
-            this.dataManager = dataManager;
+            this.hubContext = hubContext;
+            this.dataRepository = dataRepository;
             if (options == null) throw new ArgumentNullException(nameof(options));
 
             eventHubConnectionstring = options.Value.EventHubConnectionString
@@ -70,7 +78,13 @@ namespace PiIrrigateServer.Managers
                     {
                         var data = partitionEvent.Data;
                         var sensorReading = GetReadingFromEventData(data);
-                        await dataManager.HandleDataMessage(sensorReading);
+
+
+                        //Store data
+                        dataRepository.StoreData(sensorReading);
+
+                        //Send live data
+                        await hubContext.Clients.Group(sensorReading.ZoneId.ToString()).SendAsync("ReceiveLiveData", sensorReading);
                     }
                 }
             }

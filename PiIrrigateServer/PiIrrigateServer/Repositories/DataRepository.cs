@@ -4,25 +4,25 @@ using PiIrrigateServer.Database;
 using PiIrrigateServer.Models;
 using PiIrrigateServer.SignalR;
 
-namespace PiIrrigateServer.Managers
+namespace PiIrrigateServer.Repositories
 {
-    public interface IDataManager
+    public interface IDataRepository
     {
-        public Task HandleDataMessage(SensorReading sensorReading);
-        public Task<IEnumerable<SensorReading>> GetTimedZoneData (DateTime from, DateTime to, Guid zoneId);
-        public Task<IEnumerable<SensorReading>> GetTimedDeviceData (DateTime from, DateTime to, Guid zoneId, string deviceId);
-        public Task<IEnumerable<SensorReading>> GetAllZoneData (Guid zoneId);
-        public Task<IEnumerable<SensorReading>> GetAllDeviceData (Guid zoneId, string DeviceId);
+        public Task StoreData(SensorReading sensorReading);
+        public Task<IEnumerable<SensorReading>> GetTimedZoneData(DateTime from, DateTime to, Guid zoneId);
+        public Task<IEnumerable<SensorReading>> GetTimedDeviceData(DateTime from, DateTime to, Guid zoneId, string deviceId);
+        public Task<IEnumerable<SensorReading>> GetAllZoneData(Guid zoneId);
+        public Task<IEnumerable<SensorReading>> GetAllDeviceData(Guid zoneId, string DeviceId);
     }
-    public class DataManager : IDataManager
+    public class DataRepository : IDataRepository
     {
         private readonly IHubContext<LiveDataHub> hubContext;
         private readonly ApplicationDbContext dbContext;
 
-        public DataManager(IHubContext<LiveDataHub> hubContext, IDbContextFactory<ApplicationDbContext> dbContextFactory)
+        public DataRepository(IHubContext<LiveDataHub> hubContext, IDbContextFactory<ApplicationDbContext> dbContextFactory)
         {
             this.hubContext = hubContext;
-            this.dbContext = dbContextFactory.CreateDbContext();
+            dbContext = dbContextFactory.CreateDbContext();
         }
 
         public async Task<IEnumerable<SensorReading>> GetAllDeviceData(Guid zoneId, string deviceId)
@@ -53,17 +53,6 @@ namespace PiIrrigateServer.Managers
                 .Where(sr => sr.ZoneId == zoneId && sr.Timestamp >= from && sr.Timestamp <= to)
                 .OrderByDescending(sr => sr.Timestamp)
                 .ToListAsync();
-        }
-
-        public async Task HandleDataMessage(SensorReading sensorReading)
-        {
-            await SendLiveData(sensorReading);
-            await StoreData(sensorReading);
-        }
-
-        public async Task SendLiveData(SensorReading sensorReading)
-        {
-            await hubContext.Clients.Group(sensorReading.ZoneId.ToString()).SendAsync("ReceiveLiveData", sensorReading);
         }
 
         public async Task StoreData(SensorReading sensorReading)

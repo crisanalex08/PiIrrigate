@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PiIrrigateServer.Managers;
+using PiIrrigateServer.Repositories;
 
 namespace PiIrrigateServer.Controllers
 {
@@ -7,13 +7,13 @@ namespace PiIrrigateServer.Controllers
     public class DataController : ControllerBase
     {
         private readonly ILogger<DataController> logger;
-        private readonly IDataManager dataManager;
+        private readonly IDataRepository dataRepository;
 
         public DataController(ILogger<DataController> logger, 
-            IDataManager dataManager)
+            IDataRepository dataRepository)
         {
             this.logger = logger;
-            this.dataManager = dataManager;
+            this.dataRepository = dataRepository;
         }
 
         [HttpGet("data/{zoneId}/getData")]
@@ -21,7 +21,7 @@ namespace PiIrrigateServer.Controllers
         {
             try
             {
-                var data = await dataManager.GetTimedZoneData(from, to, zoneId);
+                var data = await dataRepository.GetTimedZoneData(from, to, zoneId);
                 return Ok(data);
             }
             catch (Exception e)
@@ -36,7 +36,7 @@ namespace PiIrrigateServer.Controllers
         {
             try
             {
-                var data = await dataManager.GetTimedDeviceData(from, to, zoneId, deviceId);
+                var data = await dataRepository.GetTimedDeviceData(from, to, zoneId, deviceId);
                 return Ok(data);
             }
             catch (Exception e)
@@ -51,7 +51,7 @@ namespace PiIrrigateServer.Controllers
         {
             try
             {
-                var data = await dataManager.GetAllZoneData(zoneId);
+                var data = await dataRepository.GetAllZoneData(zoneId);
                 return Ok(data);
             }
             catch (Exception e)
@@ -66,7 +66,7 @@ namespace PiIrrigateServer.Controllers
         {
             try
             {
-                var data = await dataManager.GetAllDeviceData(zoneId, deviceId);
+                var data = await dataRepository.GetAllDeviceData(zoneId, deviceId);
                 return Ok(data);
             }
             catch (Exception e)

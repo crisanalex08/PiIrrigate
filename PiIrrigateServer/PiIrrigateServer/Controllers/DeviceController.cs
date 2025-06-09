@@ -8,12 +8,12 @@ namespace PiIrrigateServer.Controllers
     [ApiController]
     public class DeviceController : ControllerBase
     {
-        private readonly ILogger<UserManagementController> logger;
+        private readonly ILogger<UserController> logger;
         private readonly IiotDeviceManager deviceManager;
         private readonly IDeviceRepository deviceRepository;
         private readonly IZoneRepository zoneRepository;
 
-        public DeviceController(ILogger<UserManagementController> logger, IiotDeviceManager deviceManager, IDeviceRepository deviceRepository, IZoneRepository zoneRepository)
+        public DeviceController(ILogger<UserController> logger, IiotDeviceManager deviceManager, IDeviceRepository deviceRepository, IZoneRepository zoneRepository)
         {
             this.logger = logger;
             this.deviceManager = deviceManager;
