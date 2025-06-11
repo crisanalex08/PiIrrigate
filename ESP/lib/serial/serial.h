@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <sensor_data.h>
 
 class MySerial {
 public:
@@ -28,7 +29,14 @@ public:
      * @param soil_moisture The soil moisture percentage to send.
      * @param rain_level The rain level percentage to send.
      */
-    void sendSensorData(int packetCount, int temperature, int humidity, int soil_moisture, int rain_level);
+    void sendSensorData(int packetCount, const SensorData &sensorData);
+
+    /**
+     * @brief Send a command via UART.
+     *
+     * @param command The command string to send.
+     */
+    void receiveCommand(std::string &command);
 
 private:
     uint8_t station_mac[6];  // MAC address of the device

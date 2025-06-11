@@ -30,6 +30,13 @@ public:
      * @param rainLevel The rain level value to send.
      */
     void sendSensorDataWithAck(SensorData sensorData, int packetCount);
+
+    /**
+     * @brief Send a command via LoRa.
+     *
+     * @param command The command string to send.
+     */
+    void sendCommand(const std::string &command);
 private:
     uint8_t station_mac[6];  // MAC address of the device
 };

@@ -15,9 +15,17 @@ public:
     /**
      * @brief Receive sensor data via LoRa.
      *
-     * @return std::string The received data as a string.
+     * @param outPacket The LoRaPacket structure to fill with received data.
+     * @return true if a complete packet was received, false otherwise.
      */
     bool receiveSensorData(LoRaPacket& outPacket);
+
+    /**
+     * @brief Receive commands via LoRa
+     *
+     * @param command The LoRaCommand structure to fill with received command data.
+     */
+    void receiveLoRaCommand(LoRaCommand& command);
 };
 
 #endif // LORA_RECEIVER_H

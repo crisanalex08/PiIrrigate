@@ -11,7 +11,7 @@
 void LoraSender::init()
 {
     // Initialize the LoRa module
-    if (!LoRa.begin(433E6))
+    if (!LoRa.begin(433.0))
     { // Set frequency to 433 MHz
         Serial.println("LoRa initialization failed!");
         while (1)
@@ -52,8 +52,8 @@ void LoraSender::sendSensorDataWithAck(SensorData sensorData, int packetCount)
     {
         LoRa.beginPacket();
         LoRa.write(dataPtr, dataLen); // Send binary data
+        // LoRa.print("HELLO"); // For testing, send a simple string
         LoRa.endPacket(true);
-
         // Wait for acknowledgment (same as before)
         unsigned long startTime = millis();
         while (millis() - startTime < 2000)
@@ -79,4 +79,47 @@ void LoraSender::sendSensorDataWithAck(SensorData sensorData, int packetCount)
         Serial.println("No acknowledgment, retrying...");
     }
     Serial.println("Failed to send packet after 3 attempts");
+}
+
+void LoraSender::sendCommand(const std::string &command)
+{
+    for (int attempt = 0; attempt < 3; attempt++)
+    {
+        LoRa.beginPacket();
+        LoRa.print(command.c_str());
+        LoRa.endPacket(true);
+
+        Serial.println("LoRa command sent: " + String(command.c_str()));
+
+        // Wait for acknowledgment (up to 2 seconds)
+        unsigned long startTime = millis();
+        bool ackReceived = false;
+        while (millis() - startTime < 2000)
+        {
+            int packetSize = LoRa.parsePacket();
+            if (packetSize > 0)
+            {
+                String ack = "";
+                while (LoRa.available())
+                {
+                    ack += (char)LoRa.read();
+                }
+                if (ack == "ACK")
+                {
+                    Serial.println("Command acknowledgment received!");
+                    return;
+                }
+            }
+        }
+        // If no ACK, reset LoRa and try again
+        Serial.println("No acknowledgment for command, resetting LoRa and retrying...");
+        LoRa.end();           // Deinitialize LoRa
+        delay(100);
+        if (!LoRa.begin(433.0)) { // Reinitialize LoRa (use your frequency)
+            Serial.println("LoRa re-initialization failed!");
+            while (1); // Halt if re-init fails
+        }
+        delay(100);
+    }
+    Serial.println("Failed to send command after 3 attempts");
 }
