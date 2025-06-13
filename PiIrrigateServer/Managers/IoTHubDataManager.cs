@@ -1,6 +1,7 @@
 ﻿using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Consumer;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using PiIrrigateServer.Database;
 using PiIrrigateServer.Models;
@@ -16,6 +17,7 @@ namespace PiIrrigateServer.Managers
         private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly IHubContext<LiveDataHub> hubContext;
         private readonly IDataRepository dataRepository;
+        private readonly IDeviceRepository deviceRepository;
         private readonly string eventHubConnectionstring;
         private readonly string eventHubName;
         private readonly string consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
@@ -27,12 +29,14 @@ namespace PiIrrigateServer.Managers
             IOptions<IoTHubConfiguraiton> options,
             IServiceScopeFactory serviceScopeFactory, 
             IHubContext<LiveDataHub> hubContext,
-            IDataRepository dataRepository)
+            IDataRepository dataRepository
+            )
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.serviceScopeFactory = serviceScopeFactory;
             this.hubContext = hubContext;
             this.dataRepository = dataRepository;
+            this.deviceRepository = deviceRepository;
             if (options == null) throw new ArgumentNullException(nameof(options));
 
             eventHubConnectionstring = options.Value.EventHubConnectionString
@@ -62,29 +66,34 @@ namespace PiIrrigateServer.Managers
                 using var scope = serviceScopeFactory.CreateScope();
                 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                macZoneDict = dbContext.Devices.ToDictionary(d => d.Mac, d => d.ZoneId);
-
                 consumer = new EventHubConsumerClient(consumerGroup, eventHubConnectionstring, eventHubName);
 
+                macZoneDict = await dbContext.Devices.ToDictionaryAsync(dbContext => dbContext.Mac, dbContext => dbContext.ZoneId, cancellationToken);
 
-                await foreach (PartitionEvent partitionEvent in consumer.ReadEventsAsync(cancellationToken))
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    if (macZoneDict.Count() == 0)
+                    await foreach (PartitionEvent partitionEvent in consumer.ReadEventsAsync(cancellationToken))
                     {
-                        logger.LogWarning($"No devices found in the database");
-                        break;
-                    }
-                    else
-                    {
-                        var data = partitionEvent.Data;
-                        var sensorReading = GetReadingFromEventData(data);
+                        try
+                        {
+                            if(macZoneDict.Keys.Count == 0)
+                            {
+                                continue;
+                            }
+                            var data = partitionEvent.Data;
+                            var sensorReading = GetReadingFromEventData(data);
 
-
-                        //Store data
-                        dataRepository.StoreData(sensorReading);
-
-                        //Send live data
-                        await hubContext.Clients.Group(sensorReading.ZoneId.ToString()).SendAsync("ReceiveLiveData", sensorReading);
+                            // Store data
+                            await dataRepository.StoreData(sensorReading);
+                            
+                            // Send live data
+                            await hubContext.Clients.Group(sensorReading.ZoneId.ToString())
+                                .SendAsync("ReceiveLiveData", sensorReading, cancellationToken);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.LogError("The message could not be parsed");
+                        }
                     }
                 }
             }

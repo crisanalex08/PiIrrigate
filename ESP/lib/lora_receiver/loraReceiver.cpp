@@ -20,7 +20,7 @@ bool LoraReceiver::receiveSensorData(LoRaPacket &outPacket)
     int packetSize = LoRa.parsePacket(); // Check if a packet is available
     if (packetSize > 0)
     {
-        Serial.println("Received a complete LoRa packet");
+        // Serial.println("Received a complete LoRa packet");
         // Read the binary packet directly into the struct
         LoRa.readBytes(reinterpret_cast<uint8_t *>(&outPacket), sizeof(LoRaPacket));
 
@@ -48,7 +48,7 @@ void LoraReceiver::receiveLoRaCommand(LoRaCommand &command)
     {
         // Read the command data
         String commandString = LoRa.readStringUntil('\n'); // Read until newline character
-        Serial.println("Received command: " + commandString);
+        // Serial.println("Received command: " + commandString);
 
         // Parse the command string into the LoRaCommand structure
         // C:methodName,param1=value1,param2=value2

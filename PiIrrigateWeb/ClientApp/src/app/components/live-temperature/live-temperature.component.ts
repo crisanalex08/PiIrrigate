@@ -1,6 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { SignalrService } from '../../services/signalr.service';
 import { GaugeComponent } from '../../widgets/gauge/gauge.component';
 
@@ -23,17 +22,25 @@ export class LiveTemperatureComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   telemetryData: any;
 
-  constructor(private telemetryService: SignalrService) {
-    console.log('TelemetryService instance:', this.telemetryService);
-  }
+  @Input() groupId!: string; // Pass the group ID (e.g., zoneId) from parent
+
+  constructor(private telemetryService: SignalrService) {}
 
   ngOnInit(): void {
     this.telemetryService.connect()
       .then(() => {
-        console.log('Connected to SignalR hub');
-        this.telemetryService.getHubConnection().on('SendLiveDataToZone', (data: any) => {
-          console.log('Received data:', data);
+        // Join the group after connecting
+        this.telemetryService.getHubConnection()
+          .invoke('JoinGroup', this.groupId)
+          .then(() => {
+            console.log(`Joined group: ${this.groupId}`);
+          })
+          .catch(err => console.error('Error joining group:', err));
+
+        // Listen for group data
+        this.telemetryService.getHubConnection().on('ReceiveLiveData', (data: any) => {
           this.telemetryData = data;
+          console.log('Received live data:', this.telemetryData);
         });
       });
   }

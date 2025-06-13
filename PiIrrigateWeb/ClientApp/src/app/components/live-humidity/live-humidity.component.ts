@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { SignalrService } from '../../services/signalr.service';
 import { GaugeComponent } from '../../widgets/gauge/gauge.component';
@@ -6,34 +6,37 @@ import { SensorData } from '../../models/sensor-data';
 
 @Component({
   selector: 'app-live-humidity',
+  standalone: true,
   imports: [GaugeComponent],
   template: `
     <app-gauge 
         [value]="telemetryData?.humidity || 0" 
-        [filledColor]="'#FF5252'" 
-        [emptyColor]="'#FFCDD2'" 
-        [gaugeLabel]="'Humidity (°C)'" 
+        [filledColor]="'#2196F3'"
+        [emptyColor]="'#BBDEFB'"
+        [gaugeLabel]="'Humidity (%)'"
+        [unit]="'%'"
         ></app-gauge>
   `,
   styles: ``
 })
-export class LiveHumidityComponent {
-private destroy$ = new Subject<void>();
+export class LiveHumidityComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   telemetryData: SensorData | null = null;
 
-  constructor(private telemetryService: SignalrService) {
-    console.log('TelemetryService instance:', this.telemetryService);
-  }
+  @Input() groupId!: string; // Pass the group ID (e.g., zoneId) from parent
+
+  constructor(private telemetryService: SignalrService) {}
 
   ngOnInit(): void {
-    this.telemetryService.connect()
+    this.telemetryService.joinGroup(this.groupId)
       .then(() => {
-        console.log('Connected to SignalR hub');
-        this.telemetryService.getHubConnection().on('SendLiveDataToZone', (data: SensorData) => {
-          console.log('Received data:', data);
+        // Listen for group data
+        this.telemetryService.getHubConnection().on('ReceiveLiveData', (data: SensorData) => {
           this.telemetryData = data;
+          console.log('Received live data:', this.telemetryData);
         });
-      });
+      })
+      .catch(err => console.error('Error joining group:', err));
   }
 
   ngOnDestroy(): void {

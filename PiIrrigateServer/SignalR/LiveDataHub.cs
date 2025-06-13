@@ -40,6 +40,18 @@ namespace PiIrrigateServer.SignalR
         {
             await hubContext.Clients.Group(data.ZoneId.ToString()).SendAsync("ReceiveLiveData", data);
         }
+
+        public async Task JoinGroup(string groupId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
+            await Clients.Caller.SendAsync("JoinedGroup", groupId);
+        }
+
+        public async Task LeaveGroup(string groupId)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId);
+            await Clients.Caller.SendAsync("LeftGroup", groupId);
+        }
     }
 
 }

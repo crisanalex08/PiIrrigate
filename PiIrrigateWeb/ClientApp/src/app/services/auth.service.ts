@@ -10,7 +10,7 @@ import { RegisteredUser } from '../models/registered-user';
 export class AuthService implements OnDestroy {
   private _authSub$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _userDetails: RegisteredUser | null = null;
-  private baseUrl = 'https://localhost:7133/UserManagement';
+  private baseUrl = 'https://localhost:7133/user';
   private readonly TOKEN_KEY = 'auth_token'; // Key for storing the token
   private readonly USER_DETAILS_KEY = 'user_details'; // Key for storing user details
 

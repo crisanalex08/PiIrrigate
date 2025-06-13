@@ -57,6 +57,12 @@ namespace PiIrrigateServer.Migrations
                     b.Property<double>("Humidity")
                         .HasColumnType("double precision");
 
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
+
                     b.Property<string>("Mac")
                         .IsRequired()
                         .HasColumnType("text");
@@ -68,6 +74,12 @@ namespace PiIrrigateServer.Migrations
                         .HasColumnType("double precision");
 
                     b.Property<double>("Temperature")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("WaterFlow")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("WaterTemperature")
                         .HasColumnType("double precision");
 
                     b.Property<Guid>("ZoneId")

@@ -4,6 +4,7 @@ namespace PiIrrigateServer.Models
 {
     public class SensorReading
     {
+        //C:16, ID:CEE0F9088C7B00000000, T:26.00, H:34.00, S:142.00, R:3134.00, WT:0.00, WF:0.00, Lon:0.000000, Lat:0.000000
         [Key]
         public DateTime Timestamp { get; set; } // Timestamp of the reading
         public Guid ZoneId { get; set; } // Unique identifier for the zone
@@ -12,12 +13,17 @@ namespace PiIrrigateServer.Models
         public double Humidity { get; set; } // Humidity
         public double SoilMoisture { get; set; } // Soil moisture
         public double Rainfall { get; set; } // Rainfall
+        public double WaterFlow { get; set; } // Water flow
+        public double WaterTemperature { get; set; } // Water temperature
+        public double Longitude { get; set; } // Longitude of the sensor location
+        public double Latitude { get; set; } // Latitude of the sensor location
 
         public override string ToString()
         {
-            return $"ZoneId: {ZoneId}, Mac: {Mac}, Timestamp: {Timestamp}, " +
-                   $"Temperature: {Temperature}°C, Humidity: {Humidity}%, " +
-                   $"SoilMoisture: {SoilMoisture}%, Rainfall: {Rainfall}mm";
+            return $"Sensor Reading: [Timestamp: {Timestamp}, ZoneId: {ZoneId}, Mac: {Mac}, " +
+                   $"Temperature: {Temperature}°C, Humidity: {Humidity}%, SoilMoisture: {SoilMoisture}%, " +
+                   $"Rainfall: {Rainfall}mm, WaterFlow: {WaterFlow}L/min, WaterTemperature: {WaterTemperature}°C, " +
+                   $"Longitude: {Longitude}, Latitude: {Latitude}]";
         }
     }
 }

@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ZonesService {
 
-  private baseUrl = 'https://localhost:7133/api';
+  private baseUrl = 'https://localhost:7133';
   userDetails: RegisteredUser | null = null;
   zones: Zone[] = [];
   devices: Device[] = [];
@@ -24,18 +24,18 @@ export class ZonesService {
       })
   }
   public getZones() {
-    return this.http.get<Zone[]>(`${this.baseUrl}/${this.userDetails?.userId}/zones`);
+    return this.http.get<Zone[]>(`${this.baseUrl}/zone/${this.userDetails?.userId}/zones`);
   }
 
   public getDevices(zoneId: string) {
-    return this.http.get<Device[]>(`${this.baseUrl}/${zoneId}/devices`);
+    return this.http.get<Device[]>(`${this.baseUrl}/device/${zoneId}/devices`);
   }
 
   getZoneData(zoneId: string) {
-    return this.http.get<any>(`${this.baseUrl}/${zoneId}/getAllData`);
+    return this.http.get<any>(`${this.baseUrl}/data/${zoneId}/getAllData`);
   }
 
   getDeviceData(zoneId: string, deviceId: string) {
-    return this.http.get<any>(`${this.baseUrl}/${zoneId}/${deviceId}/getAllData`);
+    return this.http.get<any>(`${this.baseUrl}/data/${zoneId}/${deviceId}/getAllData`);
   }
 }
