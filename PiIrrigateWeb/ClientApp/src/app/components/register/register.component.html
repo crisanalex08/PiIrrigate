@@ -39,6 +39,10 @@
   
           <button mat-raised-button color="primary" [disabled]="!registerForm.form.valid">Register</button>
         </form>
+        <span>
+          Already have an account? 
+          <button mat-button (click)="onLogin()">Login</button>
+        </span>
       </mat-card-content>
     </mat-card>
   </div>

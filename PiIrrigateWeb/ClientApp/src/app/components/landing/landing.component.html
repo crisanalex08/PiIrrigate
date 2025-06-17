@@ -1,22 +1,32 @@
 <div class="landing-title-container">
-    <h1 class="landing-title">Welcome to Our App</h1>
+    <h1 class="landing-title">PiIrrigate</h1>
     <p class="landing-subtitle">Your one-stop solution for all your needs</p>
-    <button mat-flat-button color="primary" class="landing-button">Get Started</button>
+    <button mat-flat-button color="primary" class="landing-button" (click)="onGetStarted()">Get Started</button>
 </div>
 
-<div class="features-list-container">
-    <mat-grid-list cols="3" rowHeight="1:1">
-        <mat-grid-tile>
-            <h2>Feature 1</h2>
-            <p>Description of feature 1.</p>
-        </mat-grid-tile>
-        <mat-grid-tile>
-            <h2>Feature 2</h2>
-            <p>Description of feature 2.</p>
-        </mat-grid-tile>
-        <mat-grid-tile>
-            <h2>Feature 3</h2>
-            <p>Description of feature 3.</p>
-        </mat-grid-tile>
-      </mat-grid-list>
-</div>    
+<div class="features-carousel-container" style="position: relative; width: 100%; max-width: 900px; margin: 0 auto;">
+    <!-- Gradient overlays -->
+    <div style="pointer-events:none; position:absolute; left:0; top:0; width:64px; height:100%; z-index:2; background:linear-gradient(to right, #fff 55%, transparent);"></div>
+    <div style="pointer-events:none; position:absolute; right:0; top:0; width:64px; height:100%; z-index:2; background:linear-gradient(to left, #fff 55%, transparent);"></div>
+    <div
+        #carousel
+        (wheel)="onCarouselWheel($event, carousel)"
+        style="overflow-x: auto; display: flex; flex-direction: row; align-items: stretch; gap: 24px; padding: 32px 16px; min-height: 300px; scroll-behavior: smooth;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */"
+        class="hide-scrollbar">
+        <ng-container *ngFor="let feature of features">
+            <div style="flex: 0 0 240px; min-width: 220px; max-width: 260px; display: flex; flex-direction: column; align-items: center; background: #fafafa; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 24px;">
+                <mat-icon [style.fontSize.px]="50" [style.color]="feature.iconColor">{{ feature.icon }}</mat-icon>
+                <h2 style="text-align: center; margin: 16px 0 8px 0;">{{ feature.title }}</h2>
+                <span style="text-align: center;">{{ feature.description }}</span>
+            </div>
+        </ng-container>
+    </div>
+</div>
+
+<style>
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+</style>
