@@ -7,6 +7,7 @@
 // ALl values are float to allow for decimal precision
 // All readings represent physical quantities that can be measured by sensors.
 struct SensorData {
+    time_t timestamp;
     float temperature;
     float humidity;
     float soilMoisture;
