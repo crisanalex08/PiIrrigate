@@ -1,8 +1,8 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { SensorData } from '../../models/sensor-data';
-import { SignalrService } from '../../services/signalr.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
+import { DataService } from '../../services/data.service';
 import { GaugeComponent } from '../../widgets/gauge/gauge.component';
+import { SensorData } from '../../models/sensor-data';
 
 @Component({
   selector: 'app-live-soil-moisture',
@@ -22,19 +22,14 @@ export class LiveSoilMoistureComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   telemetryData: SensorData | null = null;
 
-  @Input() groupId!: string; // Pass the group ID (e.g., zoneId) from parent
-
-  constructor(private telemetryService: SignalrService) {}
+  constructor(private dataService: DataService) {}
 
   ngOnInit(): void {
-    this.telemetryService.joinGroup(this.groupId)
-      .then(() => {
-        this.telemetryService.getHubConnection().on('ReceiveLiveData', (data: SensorData) => {
-          this.telemetryData = data;
-          console.log('Received soil moisture data:', this.telemetryData);
-        });
-      })
-      .catch(err => console.error('Error joining group:', err));
+    this.dataService.getLatestData()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: SensorData | null) => {
+        this.telemetryData = data;
+      });
   }
 
   ngOnDestroy(): void {

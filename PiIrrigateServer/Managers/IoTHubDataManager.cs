@@ -67,7 +67,7 @@ namespace PiIrrigateServer.Managers
                 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
                 consumer = new EventHubConsumerClient(consumerGroup, eventHubConnectionstring, eventHubName);
-
+                var lastReading = await dataRepository.GetLastAsync();
                 macZoneDict = await dbContext.Devices.ToDictionaryAsync(dbContext => dbContext.Mac, dbContext => dbContext.ZoneId, cancellationToken);
 
                 while (!cancellationToken.IsCancellationRequested)
@@ -83,9 +83,14 @@ namespace PiIrrigateServer.Managers
                             var data = partitionEvent.Data;
                             var sensorReading = GetReadingFromEventData(data);
 
+                            if (lastReading != null && lastReading.Timestamp > sensorReading.Timestamp)
+                            {
+                                continue;
+                            }
                             // Store data
                             await dataRepository.StoreData(sensorReading);
-                            
+                            lastReading = sensorReading;
+
                             // Send live data
                             await hubContext.Clients.Group(sensorReading.ZoneId.ToString())
                                 .SendAsync("ReceiveLiveData", sensorReading, cancellationToken);
@@ -109,7 +114,7 @@ namespace PiIrrigateServer.Managers
 
         private SensorReading GetReadingFromEventData(EventData eventData)
         {
-            //body = C:2, ID:08F9E0CE7B8C, T:24, H:44, S:142, R:3134
+            //body = C:3, ID:CEE0F9088C7B00000000, T:27.00, H:41.00, S:142.00, R:3134.00, WT:0.00, WF:0.00, Lon:0.000000, Lat:0.000000
             var pairs = eventData.EventBody.ToString().Split(", ");
             var data = new Dictionary<string, string>();
 
@@ -132,11 +137,24 @@ namespace PiIrrigateServer.Managers
                 Timestamp = eventData.EnqueuedTime.UtcDateTime,
                 Temperature = double.Parse(data["T"]),
                 Humidity = double.Parse(data["H"]),
-                SoilMoisture = double.Parse(data["S"]),
-                Rainfall = double.Parse(data["R"])
+                SoilMoisture = ComputeSoilPercentage(double.Parse(data["S"])),
+                Rainfall = ComputeRainPercentage(double.Parse(data["R"])),
+                WaterFlow = double.Parse(data["WF"]),
+                WaterTemperature = double.Parse(data["WT"]),
+                Longitude = double.Parse(data["Lon"]),
+                Latitude = double.Parse(data["Lat"]),
             };
 
             return sensorReading;
+        }
+
+        private int ComputeRainPercentage(double value)
+        {
+            return (int)Math.Round(100 - (value / 3134 * 100));
+        }
+        private double ComputeSoilPercentage(double value)
+        {
+            return (int)Math.Round((value / 3134 * 100));
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

@@ -36,11 +36,7 @@ namespace PiIrrigateServer.Services
 
         public async Task<string> SendC2DMessage(string hubDeviceId, C2DMethodCall methodCall)
         {
-            var messagePayload = JsonSerializer.Serialize(new
-            {
-                methodCall.Method,
-                methodCall.Params
-            });
+            var messagePayload = JsonSerializer.Serialize(methodCall);
 
             var message = new Message(Encoding.UTF8.GetBytes(messagePayload))
             {

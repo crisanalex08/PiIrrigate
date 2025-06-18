@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SensorData } from '../models/sensor-data';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class SignalrService {
   hubConnection: HubConnection;
   selectedZoneId: string | null = null;
 
-  constructor() {
+  constructor(private http: HttpClient) {
     if (SignalrService.connection) {
       this.hubConnection = SignalrService.connection;
     } else {
@@ -21,11 +22,6 @@ export class SignalrService {
       SignalrService.connection = this.hubConnection;
     }
   }
-
-  getHubConnection(): HubConnection {
-    return this.hubConnection;
-  }
-
   async connect(): Promise<void> {
     if (this.hubConnection.state === 'Connected') {
       return;
@@ -37,9 +33,19 @@ export class SignalrService {
       console.error('Error establishing SignalR connection:', error);
     }
   }
+  
+  /**
+   * Joins the SignalR group and listens for live data.
+   * @param groupId The group (zone) ID
+   * @param onData Callback to handle received live data
+   */
+  async startReceivingLiveData(groupId: string, onData: (data: SensorData) => void): Promise<void> {
+    await this.joinGroup(groupId);
 
-  async sendLiveDataToZone(data: SensorData): Promise<void> {
-    console.log('Sending live data to zone...');
+    // Listen for live SignalR data
+    this.hubConnection.on('ReceiveLiveData', (data: SensorData) => {
+      onData(data);
+    });
   }
 
   async joinGroup(groupId: string): Promise<void> {

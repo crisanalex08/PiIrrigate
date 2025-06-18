@@ -31,6 +31,21 @@ namespace PiIrrigateServer.Controllers
             }
         }
 
+        [HttpGet("data/{zoneId}/getLast")]
+        public async Task<IActionResult> GetLastData(DateTime from, DateTime to, Guid zoneId)
+        {
+            try
+            {
+                var data = await dataRepository.GetTimedZoneData(from, to, zoneId);
+                return Ok(data);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, e.Message);
+                return Problem(e.Message);
+            }
+        }
+
         [HttpGet("data/{zoneId}/{deviceId}/getData")]
         public async Task<IActionResult> GetDeviceData(DateTime from, DateTime to, Guid zoneId, string deviceId)
         {
@@ -76,5 +91,34 @@ namespace PiIrrigateServer.Controllers
             }
         }
 
+        [HttpGet("data/{zoneId}/getLastData")]
+        public async Task<IActionResult> GetLast(string zoneId)
+        {
+            try
+            {
+                var data = await dataRepository.GetLastAsync();
+                return Ok(data);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, e.Message);
+                return Problem(e.Message);
+            }
+        }
+
+        [HttpDelete("data/allData")]
+        public async Task<IActionResult> DeleteAllData()
+        {
+            try
+            {
+               await dataRepository.DeleteAll();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, e.Message);
+                return Problem(e.Message);
+            }
+        }
     }
 }

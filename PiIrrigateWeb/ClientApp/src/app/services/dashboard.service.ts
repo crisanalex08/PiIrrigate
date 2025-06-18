@@ -10,6 +10,7 @@ import { ControlComponent } from '../components/control/control.component';
 @Injectable()
 export class DashboardService {
 
+  selectedZoneId = signal<string | null>(null);
   widgets = signal<Widget[]>([
     {
       id: 4,

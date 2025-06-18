@@ -38,4 +38,9 @@ export class ZonesService {
   getDeviceData(zoneId: string, deviceId: string) {
     return this.http.get<any>(`${this.baseUrl}/data/${zoneId}/${deviceId}/getAllData`);
   }
+
+  getLatestData(zoneId: string) {
+    return this.http.get<any>(`${this.baseUrl}/data/${zoneId}/getLatestData`);
+  }
+  
 }
