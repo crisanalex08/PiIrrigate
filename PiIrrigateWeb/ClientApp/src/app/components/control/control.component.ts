@@ -34,11 +34,7 @@ import { FormsModule } from '@angular/forms';
       </mat-select>
     </div>
     <div class="controls">
-      <mat-slide-toggle
-        class="toggle"
-        style="margin: 20px; width: 200px;">
-        Turn irrigation on/off
-      </mat-slide-toggle>
+      
       <mat-form-field style="margin: 20px; width: 200px;">
         <mat-label>Set refresh rate (minutes)</mat-label>
         <input matInput type="number" [(ngModel)]="duration" min="1" />
@@ -46,6 +42,18 @@ import { FormsModule } from '@angular/forms';
       <button mat-raised-button color="primary" (click)="submitDuration()">
         Submit
       </button>
+      <button mat-raised-button color="green" style="margin-left: 16px;" (click)="startIrrigation()">
+        Start Irrigation
+      </button>
+      <button mat-raised-button color="warn" style="margin-left: 8px;" (click)="stopIrrigation()">
+        Stop Irrigation
+      </button>
+    </div>
+    <div *ngIf="irrigationRunning" style="margin: 16px 0;">
+      Irrigation is running
+    </div>
+    <div *ngIf="!irrigationRunning" style="margin: 16px 0;">
+      Irrigation is stopped
     </div>
   `,
   styles: ``
@@ -53,6 +61,7 @@ import { FormsModule } from '@angular/forms';
 export class ControlComponent {
   duration: number = 10;
   selectedDeviceMac: string | null = null;
+  irrigationRunning: boolean = false;
 
   constructor(private controlService: ControlService) {}
 
@@ -68,5 +77,17 @@ export class ControlComponent {
 
   submitDuration() {
     console.log('Submitted duration:', this.duration);
+  }
+
+  startIrrigation() {
+    console.log('Start irrigation for device:', this.selectedDeviceMac);
+    this.irrigationRunning = true;
+    // Add your start logic here
+  }
+
+  stopIrrigation() {
+    console.log('Stop irrigation for device:', this.selectedDeviceMac);
+    this.irrigationRunning = false;
+    // Add your stop logic here
   }
 }

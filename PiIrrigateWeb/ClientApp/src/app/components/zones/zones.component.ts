@@ -1,126 +1,109 @@
 import { Component } from '@angular/core';
-import { MatSelectModule } from '@angular/material/select';
-import { ZonesService } from '../../services/zones.service';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
-import { SensorReading } from '../../models/zone';
-import { FormsModule } from '@angular/forms';
+import { MatTreeModule } from '@angular/material/tree';
+import { MatIconModule } from '@angular/material/icon';
+import { FlatTreeControl } from '@angular/cdk/tree';
+import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
+import { ZonesService } from '../../services/zones.service';
+import { ZoneData, Device } from '../../models/zone';
+
+interface FlatNode {
+  expandable: boolean;
+  name: string;
+  level: number;
+  mac?: string;
+}
 
 @Component({
   selector: 'app-zones',
-  imports: [MatSelectModule, CommonModule, MatTableModule, FormsModule],
+  standalone: true,
+  imports: [CommonModule, MatTreeModule, MatIconModule],
   providers: [ZonesService],
   template: `
     <div class="header">
-      <h2 class="title">Zones</h2>
-    </div>
-    <div class="description">
-      <p>Select a zone to view its devices and sensor data.</p>
-    </div>
-    <div class="dropdowns">
-      <mat-select
-        placeholder="Select a zone"
-        class="select"
-        style="margin: 20px; width: 200px;"
-        [(ngModel)]="selectedZoneId"
-        (selectionChange)="onZoneChange()">
-        <mat-option *ngFor="let zone of zones" [value]="zone.zoneId">
-          {{ zone.name }}
-        </mat-option>
-      </mat-select>
-
-      <!-- Select a device -->
-      <mat-select
-        placeholder="Select a device"
-        class="select"
-        style="margin: 20px; width: 200px;"
-        [(ngModel)]="selectedDeviceId"
-        (selectionChange)="onDeviceChange()"
-        [disabled]="!showDeviceDropdown">
-        <mat-option *ngFor="let device of devices" [value]="device.mac">
-          {{ device.name }}
-        </mat-option>
-      </mat-select>
+      <h2 class="title">Zones & Devices</h2>
     </div>
 
-    <div class="content">
-      <table mat-table [dataSource]="data" class="mat-elevation-z8">
-        <ng-container matColumnDef="temperature">
-          <th mat-header-cell *matHeaderCellDef> Temperature </th>
-          <td mat-cell *matCellDef="let element"> {{element.temperature}} °C </td>
-        </ng-container>
-        <ng-container matColumnDef="humidity">
-          <th mat-header-cell *matHeaderCellDef> Humidity </th>
-          <td mat-cell *matCellDef="let element"> {{element.humidity}} % </td>
-        </ng-container>
-        <ng-container matColumnDef="soilMoisture">
-          <th mat-header-cell *matHeaderCellDef> Soil Moisture </th>
-          <td mat-cell *matCellDef="let element"> {{element.soilMoisture}} % </td>
-        </ng-container>
-        <ng-container matColumnDef="rainfall">
-          <th mat-header-cell *matHeaderCellDef> Rainfall </th>
-          <td mat-cell *matCellDef="let element"> {{element.rainfall}} mm </td>
-        </ng-container>
-        <ng-container matColumnDef="timestamp">
-          <th mat-header-cell *matHeaderCellDef> Timestamp </th>
-          <td mat-cell *matCellDef="let element"> {{element.timestamp | date:'short'}} </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
-    </div>
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="mat-elevation-z">
+      <!-- Zone node -->
+      <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle>
+        <li class="mat-tree-node">
+          <div class="icon-container">
+          <strong>{{node.name}}</strong>
+          <div class="spacer"></div>
+          <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
+            <mat-icon>
+              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+          </button>
+          </div>
+        </li>
+      </mat-tree-node>
+      <!-- Device node -->
+      <mat-tree-node *matTreeNodeDef="let node">
+        <li class="mat-tree-node" style="padding-left: 40px;">
+          <mat-icon color="primary" style="vertical-align: middle;">memory</mat-icon>
+          {{node.name}} <span style="color: white;">({{node.mac}})</span>
+        </li>
+      </mat-tree-node>
+    </mat-tree>
   `,
   styles: `
-  .description{
-    margin: 20px;
-  }
-  .dropdowns{
-    display= "flex";
-  }
+    mat-tree {
+      width: 100%;
+      border-radius: 8px;
+      margin-top: 16px;
+      padding: 8px 0;
+    }
+    .mat-tree-node {
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+    }
+    .icon-container {
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+    }
+    .spacer{
+      flex-grow: 1;
+    }
+    .divider{
+      border-bottom: 1px solid #e0e0e0;
+      margin: 8px 0;
+    }
   `
 })
 export class ZonesComponent {
-  selectedZoneId: string | null = null;
+  private _transformer = (node: ZoneData | Device, level: number) => ({
+    expandable: !!(node as ZoneData).devices && (node as ZoneData).devices!.length > 0,
+    name: (node as ZoneData).name || (node as Device).name || (node as Device).mac,
+    mac: (node as Device).mac,
+    level: level,
+  });
 
-  showDeviceDropdown: boolean = this.selectedZoneId ? true : false;
-  selectedDeviceId: string | null = null;
+  treeControl = new FlatTreeControl<FlatNode>(
+    node => node.level,
+    node => node.expandable
+  );
 
-  public data: SensorReading[] = [];
-  displayedColumns: string[] = ['temperature', 'humidity', 'soilMoisture', 'rainfall', 'timestamp'];
+  treeFlattener = new MatTreeFlattener<ZoneData | Device, FlatNode>(
+    this._transformer,
+    node => node.level,
+    node => node.expandable,
+    node => (node as ZoneData).devices
+  );
+
+  dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
   constructor(private zonesService: ZonesService) {
     this.zonesService.updateZones();
+    setTimeout(() => {
+      // zonesWithDevices: ZoneData[]
+      this.dataSource.data = this.zonesService.zonesWithDevices || [];
+    }, 500);
   }
 
-  get zones() {
-    return this.zonesService.zones;
-  }
-
-  get devices() {
-    return this.zonesService.devices;
-  }
-
-  onZoneChange() {
-    if (this.selectedZoneId) {
-      this.zonesService.getZoneData(this.selectedZoneId).subscribe(
-        (response: SensorReading[]) => {
-          this.data = response;
-          this.zonesService.getDevices(this.selectedZoneId!).subscribe(
-            (response: any) => {
-              this.zonesService.devices = response;
-            }
-          );
-          this.showDeviceDropdown = true;
-        }
-      );
-    } else {
-      this.data = [];
-    }
-  }
-
-  onDeviceChange() {
-    if (this.selectedDeviceId && this.selectedZoneId) {
-      this.data.filter((reading) => reading.mac === this.selectedDeviceId);
-    } 
-  }
+  hasChild = (_: number, node: FlatNode) => node.expandable;
 }

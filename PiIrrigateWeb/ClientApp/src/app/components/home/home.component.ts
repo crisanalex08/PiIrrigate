@@ -22,7 +22,7 @@ import { AuthService } from '../../services/auth.service';
     <button type="button" mat-icon-button (click)="drawer.toggle()">
         <mat-icon>menu</mat-icon>
     </button>
-    <img src="../../assets/logo.png" height="20">
+    <img src="https://raw.githubusercontent.com/crisanalex08/RaspberryCode/refs/heads/main/logo.png" height="20">
     <span>PiIrrigate</span>
 
     <span class="spacer"></span> <button mat-icon-button matTooltip="System Status">
@@ -44,9 +44,9 @@ import { AuthService } from '../../services/auth.service';
     <mat-drawer #drawer class="example-sidenav" mode="side">
         <div class="button-container">
             <button mat-button [routerLink]="[{ outlets: { home: null } }]">Dashboard</button>
-            <button mat-button [routerLink]="[{ outlets: { home: 'zones' } }]">Zones</button>
+            <button mat-button [routerLink]="[{ outlets: { home: 'zones' } }]">Device Management</button>
             <button mat-button routerLink="/schedules">Schedules</button>
-            <button mat-button routerLink="/history">History</button>
+            <button mat-button routerLink="/history">Data Analysis</button>
         </div>
     </mat-drawer>
 
@@ -68,7 +68,7 @@ mat-drawer-container {
 })
 export class HomeComponent {
     title = 'ClientApp';
-    systemStatusColor = 'red';
+    systemStatusColor = 'green';
 
     constructor(private router: Router, private authService: AuthService) { }
 

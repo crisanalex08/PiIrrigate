@@ -6,6 +6,8 @@ import { LiveHumidityComponent } from '../components/live-humidity/live-humidity
 import { LiveSoilMoistureComponent } from '../components/live-soil-moisture/live-soil-moisture.component';
 import { LiveRainfallComponent } from '../components/live-rainfall/live-rainfall.component';
 import { ControlComponent } from '../components/control/control.component';
+import { LiveWaterFlowComponent } from '../components/live-water-flow/live-water-flow.component';
+import { LiveWaterTemperatureComponent } from '../components/live-water-temperature/live-water-temperature.component';
 
 @Injectable()
 export class DashboardService {
@@ -37,7 +39,16 @@ export class DashboardService {
       label: 'Rainfall',
       content: LiveRainfallComponent
     },
-    
+    {
+      id: 4,
+      label: 'Water Flow',
+      content: LiveWaterFlowComponent
+    },
+    {
+      id: 5,
+      label: 'Water Temperature',
+      content: LiveWaterTemperatureComponent
+    },    
   ]);
   constructor() { }
 }

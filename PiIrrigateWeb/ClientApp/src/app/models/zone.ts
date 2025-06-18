@@ -20,3 +20,10 @@ export interface Device {
   name?: string;           // Name of the device (optional)
   location?: string;     // Location of the device (optional)
 }
+
+export interface ZoneData {
+  zoneId: string;          // Unique identifier for the zone (GUID as string)
+  name?: string;           // Name of the zone (optional)
+  userId?: string;         // User ID (optional, GUID as string)
+  devices?: Device[];      // List of devices in the zone (optional)
+}

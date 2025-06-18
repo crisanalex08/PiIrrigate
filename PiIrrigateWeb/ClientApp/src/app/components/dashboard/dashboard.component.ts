@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { DashboardService } from '../../services/dashboard.service';
 import { ZonesService } from '../../services/zones.service';
 import { SignalrService } from '../../services/signalr.service';
@@ -23,7 +23,7 @@ import { WidgetComponent } from '../widget/widget.component';
   providers: [DashboardService, ZonesService, SignalrService],
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   store = inject(DashboardService);
 
   zones: any[] = [];
@@ -43,6 +43,12 @@ export class DashboardComponent {
         }
       }
     );
+  }
+
+  ngOnInit(): void {
+    if (this.selectedZoneId) {
+      this.handleZoneChange(this.selectedZoneId);
+    }
   }
 
   onZoneChange() {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { RegisteredUser } from '../models/registered-user';
-import { Device, Zone } from '../models/zone';
+import { Device, Zone, ZoneData } from '../models/zone';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -12,6 +12,7 @@ export class ZonesService {
   private baseUrl = 'https://localhost:7133';
   userDetails: RegisteredUser | null = null;
   zones: Zone[] = [];
+  zonesWithDevices: ZoneData[] = [];
   devices: Device[] = [];
   constructor(private authService: AuthService, private http: HttpClient) {
     this.userDetails = this.authService.getUserDetails();
@@ -21,6 +22,19 @@ export class ZonesService {
     this.getZones().subscribe(
       (response: Zone[]) => {
         this.zones = response;
+        this.zones.forEach(zone => {
+          this.getDevices(zone.zoneId).subscribe(
+            (devices: Device[]) => {
+              const zoneData: ZoneData = {
+                zoneId: zone.zoneId,
+                name: zone.name,
+                userId: zone.userId,
+                devices: devices
+              };
+              this.zonesWithDevices.push(zoneData);
+            }
+          );
+        });
       })
   }
   public getZones() {
