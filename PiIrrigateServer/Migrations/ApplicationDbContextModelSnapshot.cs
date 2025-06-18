@@ -22,6 +22,43 @@ namespace PiIrrigateServer.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("PiIrrigateServer.Models.C2DMessageRequest", b =>
+                {
+                    b.Property<Guid>("ZoneId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("methodCallId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ZoneId");
+
+                    b.HasIndex("methodCallId");
+
+                    b.ToTable("C2DMessageRequest");
+                });
+
+            modelBuilder.Entity("PiIrrigateServer.Models.C2DMethodCall", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DeviceId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Method")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("C2DMethodCall");
+                });
+
             modelBuilder.Entity("PiIrrigateServer.Models.Device", b =>
                 {
                     b.Property<string>("Mac")
@@ -47,6 +84,68 @@ namespace PiIrrigateServer.Migrations
                     b.HasIndex("ZoneId");
 
                     b.ToTable("Devices");
+                });
+
+            modelBuilder.Entity("PiIrrigateServer.Models.MethodParams", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("C2DMethodCallId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("C2DMethodCallId");
+
+                    b.ToTable("MethodParams");
+                });
+
+            modelBuilder.Entity("PiIrrigateServer.Models.Schedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AutoStop")
+                        .HasColumnType("boolean");
+
+                    b.Property<TimeSpan>("Duration")
+                        .HasColumnType("interval");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<TimeSpan>("Interval")
+                        .HasColumnType("interval");
+
+                    b.Property<Guid>("RequestZoneId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ScheduleStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestZoneId");
+
+                    b.ToTable("Schedules");
                 });
 
             modelBuilder.Entity("PiIrrigateServer.Models.SensorReading", b =>
@@ -132,6 +231,17 @@ namespace PiIrrigateServer.Migrations
                     b.ToTable("Zones");
                 });
 
+            modelBuilder.Entity("PiIrrigateServer.Models.C2DMessageRequest", b =>
+                {
+                    b.HasOne("PiIrrigateServer.Models.C2DMethodCall", "methodCall")
+                        .WithMany()
+                        .HasForeignKey("methodCallId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("methodCall");
+                });
+
             modelBuilder.Entity("PiIrrigateServer.Models.Device", b =>
                 {
                     b.HasOne("PiIrrigateServer.Models.Zone", "Zone")
@@ -143,6 +253,24 @@ namespace PiIrrigateServer.Migrations
                     b.Navigation("Zone");
                 });
 
+            modelBuilder.Entity("PiIrrigateServer.Models.MethodParams", b =>
+                {
+                    b.HasOne("PiIrrigateServer.Models.C2DMethodCall", null)
+                        .WithMany("Params")
+                        .HasForeignKey("C2DMethodCallId");
+                });
+
+            modelBuilder.Entity("PiIrrigateServer.Models.Schedule", b =>
+                {
+                    b.HasOne("PiIrrigateServer.Models.C2DMessageRequest", "Request")
+                        .WithMany()
+                        .HasForeignKey("RequestZoneId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Request");
+                });
+
             modelBuilder.Entity("PiIrrigateServer.Models.Zone", b =>
                 {
                     b.HasOne("PiIrrigateServer.Models.User", "User")
@@ -151,6 +279,11 @@ namespace PiIrrigateServer.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PiIrrigateServer.Models.C2DMethodCall", b =>
+                {
+                    b.Navigation("Params");
                 });
 
             modelBuilder.Entity("PiIrrigateServer.Models.User", b =>

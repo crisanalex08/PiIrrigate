@@ -14,11 +14,12 @@ namespace PiIrrigateServer.Repositories
     }
     public class ScheduleRepository : IScheduleRepository
     {
-        private readonly ApplicationDbContext dbContext;
+        private readonly IServiceScopeFactory serviceScopeFactory;
 
-        public ScheduleRepository(ApplicationDbContext dbContext)
+
+        public ScheduleRepository(IServiceScopeFactory scopeFactory)
         {
-            this.dbContext = dbContext;
+            this.serviceScopeFactory = scopeFactory;
         }
 
         public Task CreateSchedule(Schedule schedule)

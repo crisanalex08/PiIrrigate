@@ -35,10 +35,10 @@ namespace PiIrrigateServer.Controllers
 
             scheduleRepository.CreateSchedule(new Schedule
             {
-                request = request.Request,
-                startTime = request.StartTime,
-                endTime = request.EndTime,
-                scheduleStatus = Enums.ScheduleStatus.NotStarted
+                Request = request.Request,
+                StartTime = request.StartTime,
+                EndTime = request.EndTime,
+                ScheduleStatus = Enums.ScheduleStatus.NotStarted
             });
 
             return Ok("Schedule created successfully.");
@@ -66,22 +66,22 @@ namespace PiIrrigateServer.Controllers
         [HttpPut("api/schedule/update")]
         public async Task<IActionResult> UpdateSchedule([FromBody] Schedule schedule)
         {
-            if (schedule == null || schedule.id <= 0)
+            if (schedule == null || schedule.Id <= 0)
             {
                 return BadRequest("Invalid schedule data.");
             }
 
-            var existingSchedule = await scheduleRepository.GetScheduleById(schedule.id);
+            var existingSchedule = await scheduleRepository.GetScheduleById(schedule.Id);
             if (existingSchedule == null)
             {
                 return NotFound("Schedule not found.");
             }
 
             // Update the existing schedule with new values
-            existingSchedule.request = schedule.request;
-            existingSchedule.startTime = schedule.startTime;
-            existingSchedule.endTime = schedule.endTime;
-            existingSchedule.scheduleStatus = schedule.scheduleStatus;
+            existingSchedule.Request = schedule.Request;
+            existingSchedule.StartTime = schedule.StartTime;
+            existingSchedule.EndTime = schedule.EndTime;
+            existingSchedule.ScheduleStatus = schedule.ScheduleStatus;
 
             await scheduleRepository.UpdateSchedule(existingSchedule);
             return Ok("Schedule updated successfully.");

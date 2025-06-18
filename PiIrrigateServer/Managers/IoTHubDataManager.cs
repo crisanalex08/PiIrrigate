@@ -27,12 +27,12 @@ namespace PiIrrigateServer.Managers
             IOptions<IoTHubConfiguraiton> options,
             IServiceScopeFactory serviceScopeFactory, 
             IHubContext<LiveDataHub> hubContext,
-            IDataRepository dataRepository)
+            IServiceProvider serviceProvider)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.serviceScopeFactory = serviceScopeFactory;
             this.hubContext = hubContext;
-            this.dataRepository = dataRepository;
+            this.dataRepository = serviceProvider.GetRequiredService<IDataRepository>();
             if (options == null) throw new ArgumentNullException(nameof(options));
 
             eventHubConnectionstring = options.Value.EventHubConnectionString
