@@ -7,6 +7,7 @@
     background-color: #101414;
 }
 
+
 h1 {
     font-size: 2.25rem;
     font-weight: 400;
@@ -14,6 +15,15 @@ h1 {
     color: #ffffff;
     margin: 0;
 }
+
+.features-carousel-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+    width: (calc(100% - 40px));
+}
+
 
 p {
     font-size: 1.125rem;
@@ -25,5 +35,4 @@ p {
 
 button {
     margin-top: 20px;
-    
 }

@@ -70,6 +70,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this._destroySub$.next();
   }
 
+  public onLogin(): void {
+    this._router.navigate(['/login'], {
+      queryParams: { returnUrl: this.returnUrl }
+    });
+  }
+
   public onSubmit(): void {
     this.registerValid = true;
 

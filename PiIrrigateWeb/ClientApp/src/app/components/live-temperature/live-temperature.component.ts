@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { SignalrService } from '../../services/signalr.service';
+import { Subject, takeUntil } from 'rxjs';
+import { DataService } from '../../services/data.service';
 import { GaugeComponent } from '../../widgets/gauge/gauge.component';
+import { SensorData } from '../../models/sensor-data';
 
 @Component({
   selector: 'app-live-temperature',
@@ -21,20 +21,15 @@ import { GaugeComponent } from '../../widgets/gauge/gauge.component';
 })
 export class LiveTemperatureComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  telemetryData: any;
+  telemetryData: SensorData | null = null;
 
-  constructor(private telemetryService: SignalrService) {
-    console.log('TelemetryService instance:', this.telemetryService);
-  }
+  constructor(private dataService: DataService) {}
 
   ngOnInit(): void {
-    this.telemetryService.connect()
-      .then(() => {
-        console.log('Connected to SignalR hub');
-        this.telemetryService.getHubConnection().on('SendLiveDataToZone', (data: any) => {
-          console.log('Received data:', data);
-          this.telemetryData = data;
-        });
+    this.dataService.getLatestData()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: SensorData | null) => {
+        this.telemetryData = data;
       });
   }
 

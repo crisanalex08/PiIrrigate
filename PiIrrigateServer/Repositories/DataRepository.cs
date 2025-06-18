@@ -9,10 +9,12 @@ namespace PiIrrigateServer.Repositories
     public interface IDataRepository
     {
         public Task StoreData(SensorReading sensorReading);
+        public Task<SensorReading> GetLastAsync();
         public Task<IEnumerable<SensorReading>> GetTimedZoneData(DateTime from, DateTime to, Guid zoneId);
         public Task<IEnumerable<SensorReading>> GetTimedDeviceData(DateTime from, DateTime to, Guid zoneId, string deviceId);
         public Task<IEnumerable<SensorReading>> GetAllZoneData(Guid zoneId);
         public Task<IEnumerable<SensorReading>> GetAllDeviceData(Guid zoneId, string DeviceId);
+        public Task DeleteAll();
     }
     public class DataRepository : IDataRepository
     {
@@ -23,6 +25,12 @@ namespace PiIrrigateServer.Repositories
         {
             this.hubContext = hubContext;
             dbContext = dbContextFactory.CreateDbContext();
+        }
+
+        public async Task DeleteAll()
+        {
+            dbContext.SensorReadings.RemoveRange(dbContext.SensorReadings.ToList());
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<SensorReading>> GetAllDeviceData(Guid zoneId, string deviceId)
@@ -37,6 +45,11 @@ namespace PiIrrigateServer.Repositories
             return await dbContext.SensorReadings
                 .Where(sr => sr.ZoneId == zoneId)
                 .ToListAsync();
+        }
+
+        public async Task<SensorReading> GetLastAsync()
+        {
+            return await dbContext.SensorReadings.OrderBy(s => s.Timestamp).LastOrDefaultAsync().ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<SensorReading>> GetTimedDeviceData(DateTime from, DateTime to, Guid zoneId, string deviceId)

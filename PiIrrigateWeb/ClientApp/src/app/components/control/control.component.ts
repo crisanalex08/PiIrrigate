@@ -25,7 +25,9 @@ import { FormsModule } from '@angular/forms';
       <mat-select
         placeholder="Select a device"
         class="select"
-        style="margin: 20px; width: 200px;">
+        style="margin: 20px; width: 200px;"
+        [(ngModel)]="selectedDeviceMac"
+        (selectionChange)="onDeviceChange()">
         <mat-option *ngFor="let device of devices" [value]="device.mac">
           {{ device.name }}
         </mat-option>
@@ -50,6 +52,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class ControlComponent {
   duration: number = 10;
+  selectedDeviceMac: string | null = null;
 
   constructor(private controlService: ControlService) {}
 
@@ -57,8 +60,13 @@ export class ControlComponent {
     return this.controlService.devices;
   }
 
+  onDeviceChange() {
+    console.log('Selected device MAC:', this.selectedDeviceMac);
+    const selectedDevice = this.devices.find(d => d.mac === this.selectedDeviceMac);
+    console.log('Selected device:', selectedDevice);
+  }
+
   submitDuration() {
-    // Implement your submit logic here
     console.log('Submitted duration:', this.duration);
   }
 }

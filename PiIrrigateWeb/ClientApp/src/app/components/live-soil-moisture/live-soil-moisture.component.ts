@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
-import { Subject } from 'rxjs';
-import { SensorData } from '../../models/sensor-data';
-import { SignalrService } from '../../services/signalr.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
+import { DataService } from '../../services/data.service';
 import { GaugeComponent } from '../../widgets/gauge/gauge.component';
+import { SensorData } from '../../models/sensor-data';
 
 @Component({
   selector: 'app-live-soil-moisture',
+  standalone: true,
   imports: [GaugeComponent],
   template: `
    <app-gauge 
@@ -17,22 +18,17 @@ import { GaugeComponent } from '../../widgets/gauge/gauge.component';
   `,
   styles: ``
 })
-export class LiveSoilMoistureComponent {
+export class LiveSoilMoistureComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   telemetryData: SensorData | null = null;
 
-  constructor(private telemetryService: SignalrService) {
-    console.log('TelemetryService instance:', this.telemetryService);
-  }
+  constructor(private dataService: DataService) {}
 
   ngOnInit(): void {
-    this.telemetryService.connect()
-      .then(() => {
-        console.log('Connected to SignalR hub');
-        this.telemetryService.getHubConnection().on('SendLiveDataToZone', (data: SensorData) => {
-          console.log('Received data:', data);
-          this.telemetryData = data;
-        });
+    this.dataService.getLatestData()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: SensorData | null) => {
+        this.telemetryData = data;
       });
   }
 

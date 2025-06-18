@@ -29,6 +29,6 @@ export class ControlService {
     if (!userId) {
       throw new Error('User ID not found');
     }
-    return this.httpClient.get<Device[]>(`${this.baseUrl}/api/user/${userId}/devices`);
+    return this.httpClient.get<Device[]>(`${this.baseUrl}/device/user/${userId}/devices`);
   }
 }

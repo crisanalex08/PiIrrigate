@@ -29,14 +29,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddSingleton<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IDeviceRepository, DeviceRepository>();
-builder.Services.AddSingleton<IZoneRepository, ZoneRepository>();
-builder.Services.AddSingleton<IScheduleRepository, ScheduleRepository>();
-builder.Services.AddSingleton<IDataRepository, DataRepository>();
+builder.Services.AddScoped<IZoneRepository, ZoneRepository>();
 builder.Services.AddScoped<IiotDeviceManager, IotDeviceManager>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddSingleton<IDataRepository, DataRepository>();
 builder.Services.AddSingleton<DataSenderMock>();
 builder.Services.AddSingleton<C2DMessageSenderManager>();
 
