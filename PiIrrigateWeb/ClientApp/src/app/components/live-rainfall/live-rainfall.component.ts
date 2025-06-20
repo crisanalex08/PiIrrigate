@@ -13,8 +13,8 @@ import { SensorData } from '../../models/sensor-data';
         [value]="telemetryData?.rainfall || 0" 
         [filledColor]="'#2196F3'" 
         [emptyColor]="'#BBDEFB'" 
-        [gaugeLabel]="'Rainfall (mm)'" 
-        [unit]="'mm'"
+        [gaugeLabel]="'Raindrop'" 
+        [unit]="'%'"
         ></app-gauge>
   `,
   styles: ``

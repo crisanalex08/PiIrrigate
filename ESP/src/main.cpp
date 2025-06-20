@@ -97,6 +97,7 @@ void loop()
         }
 
         SensorData sensorData;
+        sensorData.timestamp = time(nullptr); 
         sensorData.temperature = static_cast<float>(temperature);
         sensorData.humidity = static_cast<float>(humidity);
         sensorData.soilMoisture = static_cast<float>(soilMoisture);
@@ -158,7 +159,7 @@ void loop()
     {
         char buffer[256];
         snprintf(buffer, sizeof(buffer),
-                 "C:%d, ID:%02X%02X%02X%02X%02X%02X, T:%.2f, H:%.2f, S:%.2f, R:%.2f, WT:%.2f, WF:%.2f, Lon:%.6f, Lat:%.6f\n",
+                 "C:%d, ID:%02X%02X%02X%02X%02X%02X, T:%.2f, H:%.2f, S:%.2f, R:%.2f, WT:%.2f, WF:%.2f, Lon:%.6f, Lat:%.6f, CT:\n",
                  receivedPacket.packetCount,
                  receivedPacket.stationMac[0], receivedPacket.stationMac[1], receivedPacket.stationMac[2],
                  receivedPacket.stationMac[3], receivedPacket.stationMac[4], receivedPacket.stationMac[5],
@@ -169,7 +170,8 @@ void loop()
                  receivedPacket.sensorData.waterTemp,
                  receivedPacket.sensorData.totalWaterFlow,
                  receivedPacket.sensorData.longitude,
-                 receivedPacket.sensorData.latitude);
+                 receivedPacket.sensorData.latitude,
+                 receivedPacket.sensorData.timestamp);
         // Send formatted data via custom serial
         customSerial.send(buffer);
 

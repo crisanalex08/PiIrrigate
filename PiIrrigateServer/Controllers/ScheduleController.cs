@@ -28,7 +28,7 @@ namespace PiIrrigateServer.Controllers
                 return BadRequest("Start time must be before end time.");
             }
 
-            if (request.StartTime <= DateTime.UtcNow || request.EndTime <= DateTime.UtcNow)
+            if (request.EndTime <= DateTime.UtcNow)
             {
                 return BadRequest("Start and end times must be in the future.");
             }

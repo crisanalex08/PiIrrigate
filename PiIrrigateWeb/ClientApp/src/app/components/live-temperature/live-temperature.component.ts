@@ -13,7 +13,7 @@ import { SensorData } from '../../models/sensor-data';
         [value]="telemetryData?.temperature || 0" 
         [filledColor]="'#FF5252'"
         [emptyColor]="'#FFCDD2'"
-        [gaugeLabel]="'Temperature (°C)'"
+        [gaugeLabel]="'Temperature'"
         [unit]="'°C'"
         ></app-gauge>
   `,

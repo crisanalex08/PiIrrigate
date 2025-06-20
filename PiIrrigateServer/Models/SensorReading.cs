@@ -17,13 +17,14 @@ namespace PiIrrigateServer.Models
         public double WaterTemperature { get; set; } // Water temperature
         public double Longitude { get; set; } // Longitude of the sensor location
         public double Latitude { get; set; } // Latitude of the sensor location
+        public DateTime ReadingTime { get; set; } // Time when the reading was taken
 
         public override string ToString()
         {
             return $"Sensor Reading: [Timestamp: {Timestamp}, ZoneId: {ZoneId}, Mac: {Mac}, " +
                    $"Temperature: {Temperature}°C, Humidity: {Humidity}%, SoilMoisture: {SoilMoisture}%, " +
                    $"Rainfall: {Rainfall}mm, WaterFlow: {WaterFlow}L/min, WaterTemperature: {WaterTemperature}°C, " +
-                   $"Longitude: {Longitude}, Latitude: {Latitude}]";
+                   $"Longitude: {Longitude}, Latitude: {Latitude}, RadingTime:{ReadingTime}]";
         }
     }
 }

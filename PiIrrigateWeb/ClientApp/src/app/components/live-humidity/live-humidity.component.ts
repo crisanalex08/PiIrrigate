@@ -13,7 +13,7 @@ import { SensorData } from '../../models/sensor-data';
         [value]="telemetryData?.humidity || 0" 
         [filledColor]="'#2196F3'"
         [emptyColor]="'#BBDEFB'"
-        [gaugeLabel]="'Humidity (%)'"
+        [gaugeLabel]="'Humidity'"
         [unit]="'%'"
         ></app-gauge>
   `,

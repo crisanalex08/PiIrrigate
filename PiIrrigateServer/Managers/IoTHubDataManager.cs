@@ -114,7 +114,7 @@ namespace PiIrrigateServer.Managers
 
         private SensorReading GetReadingFromEventData(EventData eventData)
         {
-            //body = C:3, ID:CEE0F9088C7B00000000, T:27.00, H:41.00, S:142.00, R:3134.00, WT:0.00, WF:0.00, Lon:0.000000, Lat:0.000000
+            //body = C:3, ID:CEE0F9088C7B00000000, T:27.00, H:41.00, S:142.00, R:3134.00, WT:0.00, WF:0.00, Lon:0.000000, Lat:0.000000, CT:1750275804
             var pairs = eventData.EventBody.ToString().Split(", ");
             var data = new Dictionary<string, string>();
 
@@ -143,9 +143,19 @@ namespace PiIrrigateServer.Managers
                 WaterTemperature = double.Parse(data["WT"]),
                 Longitude = double.Parse(data["Lon"]),
                 Latitude = double.Parse(data["Lat"]),
+                ReadingTime = GetDateTimeFromEpoch(data["CT"])
             };
 
             return sensorReading;
+        }
+
+        private DateTime GetDateTimeFromEpoch(string epochTimeString)
+        {
+            if (long.TryParse(epochTimeString, out long epochSeconds))
+            {
+                return DateTimeOffset.FromUnixTimeSeconds(epochSeconds).UtcDateTime;
+            }
+            throw new ArgumentException("Invalid epoch time string.");
         }
 
         private int ComputeRainPercentage(double value)
