@@ -1,4 +1,5 @@
 ﻿using PiIrrigateServer.Models;
+using PiIrrigateServer.Services;
 
 namespace PiIrrigateServer.Managers
 {
@@ -6,6 +7,7 @@ namespace PiIrrigateServer.Managers
     {
         private readonly ILogger<IrrigationManager> logger;
         private readonly IServiceScopeFactory serviceScopeFactory;
+        private readonly Configuration config;
 
         // Thresholds and configuration parameters
         private readonly double MinTemperature = -20;
@@ -18,16 +20,13 @@ namespace PiIrrigateServer.Managers
         private readonly double MaxWaterTemperature = 40;
 
         // Decision logic thresholds
-        private readonly double IrrigationSoilMoistureThreshold = 40;
-        private readonly double IrrigationRainfallThreshold = 20;
-        private readonly double OverwateringSoilMoistureThreshold = 80;
-        private readonly double UnderwateringSoilMoistureThreshold = 30;
-        private readonly double RainfallHighThreshold = 50;
+    
 
-        public IrrigationManager(ILogger<IrrigationManager> logger, IServiceScopeFactory serviceScopeFactory)
+        public IrrigationManager(ILogger<IrrigationManager> logger, IServiceScopeFactory serviceScopeFactory, ConfigurationService config)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
+            this.config = config.GetConfiguration();;
         }
 
         public void ProcessSensorReading(SensorReading reading)
@@ -39,28 +38,28 @@ namespace PiIrrigateServer.Managers
             }
 
             // Rule 1: Irrigation Trigger
-            if (reading.SoilMoisture < IrrigationSoilMoistureThreshold && reading.Rainfall < IrrigationRainfallThreshold)
+            if (reading.SoilMoisture < config.soilMoistureLowThreshold && reading.Rainfall < config.rainDropHighThreshold)
             {
                 logger.LogInformation("Irrigation needed in zone {ZoneId}. Soil moisture: {SoilMoisture}%, Rainfall: {Rainfall}%",
                     reading.ZoneId, reading.SoilMoisture, reading.Rainfall);
             }
 
             // Rule 2: Overwatering Detection
-            if (reading.SoilMoisture > OverwateringSoilMoistureThreshold && reading.WaterFlow > 0)
+            if (reading.SoilMoisture > config.soilMoistureHighThreshold && reading.WaterFlow > 0)
             {
                 logger.LogWarning("Overwatering detected in zone {ZoneId}. Soil moisture: {SoilMoisture}%, Water flow: {WaterFlow}",
                     reading.ZoneId, reading.SoilMoisture, reading.WaterFlow);
             }
 
             // Rule 3: Underwatering / Dry Alert
-            if (reading.SoilMoisture < UnderwateringSoilMoistureThreshold && reading.WaterFlow == 0)
+            if (reading.SoilMoisture < config.soilMoistureLowThreshold && reading.WaterFlow == 0)
             {
                 logger.LogWarning("Dry zone alert in zone {ZoneId}. Soil moisture: {SoilMoisture}%, No water flow.",
                     reading.ZoneId, reading.SoilMoisture);
             }
 
             // Rule 4: Rainfall Reaction
-            if (reading.Rainfall > RainfallHighThreshold && reading.WaterFlow > 0)
+            if (reading.Rainfall > config.rainDropLowThreshold && reading.WaterFlow > 0)
             {
                 logger.LogWarning("Suspicious irrigation during rain in zone {ZoneId}. Rainfall: {Rainfall}%, Water flow: {WaterFlow}",
                     reading.ZoneId, reading.Rainfall, reading.WaterFlow);
