@@ -1,0 +1,10 @@
+<mat-form-field>
+    <mat-label>Zone</mat-label>
+    <mat-select [(ngModel)]="selectedZoneId" required (selectionChange)="onZoneChange()">
+        <mat-option *ngFor="let zone of zones" [value]="zone.zoneId">{{ zone.name }}</mat-option>
+    </mat-select>
+</mat-form-field>
+
+<ng-container *ngIf="selectedZoneId && sensorData?.length">
+  <app-line [sensorData]="sensorData"></app-line>
+</ng-container>

@@ -1,0 +1,16 @@
+<mat-form-field>
+    <mat-label>Zone</mat-label>
+    <mat-select [(ngModel)]="selectedZoneId" required (selectionChange)="onZoneChange()">
+        <mat-option *ngFor="let zone of zones" [value]="zone.zoneId">{{ zone.name }}</mat-option>
+    </mat-select>
+</mat-form-field>
+
+<div class="chart-feature-selector" style="margin-bottom: 1em;">
+  <label *ngFor="let feature of availableFeatures" style="margin-right: 1em;">
+    <input type="checkbox" [value]="feature" [(ngModel)]="featureSelections[feature]" (change)="onFeatureSelectionChange()" />
+    {{ feature }}
+  </label>
+</div>
+<div class="chart-container">
+  <canvas #myChartCanvas id="MyChart"> {{chart}} </canvas>
+</div>

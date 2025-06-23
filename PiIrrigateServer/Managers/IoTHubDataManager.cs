@@ -17,6 +17,7 @@ namespace PiIrrigateServer.Managers
         private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly IHubContext<LiveDataHub> hubContext;
         private readonly IDataRepository dataRepository;
+        private readonly IrrigationManager irrigationManager;
         private readonly IDeviceRepository deviceRepository;
         private readonly string eventHubConnectionstring;
         private readonly string eventHubName;
@@ -65,7 +66,7 @@ namespace PiIrrigateServer.Managers
 
                 using var scope = serviceScopeFactory.CreateScope();
                 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
+                var irrigationManager = scope.ServiceProvider.GetRequiredService<IrrigationManager>();
                 consumer = new EventHubConsumerClient(consumerGroup, eventHubConnectionstring, eventHubName);
                 var lastReading = await dataRepository.GetLastAsync();
                 macZoneDict = await dbContext.Devices.ToDictionaryAsync(dbContext => dbContext.Mac, dbContext => dbContext.ZoneId, cancellationToken);
@@ -81,19 +82,27 @@ namespace PiIrrigateServer.Managers
                                 continue;
                             }
                             var data = partitionEvent.Data;
-                            var sensorReading = GetReadingFromEventData(data);
 
+                            if (data.EnqueuedTime < DateTime.UtcNow - TimeSpan.FromMinutes(1))
+                            {
+                                continue;
+                            }
+
+                            var sensorReading = GetReadingFromEventData(data);
+                            await irrigationManager.ProcessSensorReading(sensorReading);
                             if (lastReading != null && lastReading.Timestamp > sensorReading.Timestamp)
                             {
                                 continue;
                             }
+                            // Send live data
+                            await hubContext.Clients.Group(sensorReading.ZoneId.ToString())
+                                .SendAsync("ReceiveLiveData", sensorReading, cancellationToken);
+
                             // Store data
                             await dataRepository.StoreData(sensorReading);
                             lastReading = sensorReading;
 
-                            // Send live data
-                            await hubContext.Clients.Group(sensorReading.ZoneId.ToString())
-                                .SendAsync("ReceiveLiveData", sensorReading, cancellationToken);
+               
                         }
                         catch (Exception e)
                         {
@@ -143,7 +152,8 @@ namespace PiIrrigateServer.Managers
                 WaterTemperature = double.Parse(data["WT"]),
                 Longitude = double.Parse(data["Lon"]),
                 Latitude = double.Parse(data["Lat"]),
-                ReadingTime = GetDateTimeFromEpoch(data["CT"])
+                ReadingTime = data["CT"] != null ? GetDateTimeFromEpoch(data["CT"]) : DateTime.UtcNow,
+                Watering = data["W"] != null && data["W"].Equals("1", StringComparison.OrdinalIgnoreCase) ? true : false,
             };
 
             return sensorReading;
@@ -164,7 +174,7 @@ namespace PiIrrigateServer.Managers
         }
         private double ComputeSoilPercentage(double value)
         {
-            return (int)Math.Round((value / 3134 * 100));
+            return (int)Math.Round(100 - (value / 3134 * 100));
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

@@ -45,8 +45,10 @@ import { AuthService } from '../../services/auth.service';
         <div class="button-container">
             <button mat-button [routerLink]="[{ outlets: { home: null } }]">Dashboard</button>
             <button mat-button [routerLink]="[{ outlets: { home: 'zones' } }]">Device Management</button>
-            <button mat-button routerLink="/schedules">Schedules</button>
-            <button mat-button routerLink="/history">Data Analysis</button>
+            <button mat-button [routerLink]="[{ outlets: { home: 'configuration' } }]">Configuration</button>
+            <button mat-button [routerLink]="[{ outlets: { home: 'schedules' } }]">Schedules</button>
+            <button mat-button [routerLink]="[{ outlets: { home: 'charts' } }]">Data Analysis</button>
+            <button mat-button [routerLink]="[{ outlets: { home: 'live-charts' } }]">Live Charts</button>
         </div>
     </mat-drawer>
 

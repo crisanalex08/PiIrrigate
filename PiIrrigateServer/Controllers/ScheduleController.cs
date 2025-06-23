@@ -15,7 +15,7 @@ namespace PiIrrigateServer.Controllers
             // Initialize any required services or dependencies here
         }
 
-        [HttpPost("api/schedule/create")]
+        [HttpPost("api/schedule")]
         public IActionResult CreateSchedule([FromBody] CreateScheduleRequest request)
         {
             if (request == null)
@@ -33,15 +33,20 @@ namespace PiIrrigateServer.Controllers
                 return BadRequest("Start and end times must be in the future.");
             }
 
-            scheduleRepository.CreateSchedule(new Schedule
+
+            var schedule = new Schedule
             {
-                Request = request.Request,
+                DeviceId = request.DeviceId,
+                ZoneId = new Guid(request.ZoneId),
                 StartTime = request.StartTime,
                 EndTime = request.EndTime,
+                Duration = TimeSpan.FromMinutes(request.Duration),
+                Interval = TimeSpan.FromHours(request.Interval),
                 ScheduleStatus = Enums.ScheduleStatus.NotStarted
-            });
+            };
+            scheduleRepository.CreateSchedule(schedule);
 
-            return Ok("Schedule created successfully.");
+            return Ok(schedule.Id);
         }
 
         [HttpGet("api/schedule/{id}")]
@@ -63,7 +68,7 @@ namespace PiIrrigateServer.Controllers
             return Ok(schedules);
         }
 
-        [HttpPut("api/schedule/update")]
+        [HttpPut("api/schedule/{id}")]
         public async Task<IActionResult> UpdateSchedule([FromBody] Schedule schedule)
         {
             if (schedule == null || schedule.Id <= 0)
@@ -78,7 +83,6 @@ namespace PiIrrigateServer.Controllers
             }
 
             // Update the existing schedule with new values
-            existingSchedule.Request = schedule.Request;
             existingSchedule.StartTime = schedule.StartTime;
             existingSchedule.EndTime = schedule.EndTime;
             existingSchedule.ScheduleStatus = schedule.ScheduleStatus;
@@ -86,5 +90,19 @@ namespace PiIrrigateServer.Controllers
             await scheduleRepository.UpdateSchedule(existingSchedule);
             return Ok("Schedule updated successfully.");
         }
+
+        [HttpDelete("api/schedule/{id}")]
+        public async Task<IActionResult> DeleteSchedule(int id)
+        {
+            var existingSchedule = await scheduleRepository.GetScheduleById(id);
+            if (existingSchedule == null)
+            {
+                return NotFound("Schedule not found.");
+            }
+
+            await scheduleRepository.DeleteSchedule(id);
+            return Ok(id);
+        }
+
     }
 }

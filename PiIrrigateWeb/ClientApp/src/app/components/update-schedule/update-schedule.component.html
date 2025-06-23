@@ -1,0 +1,33 @@
+  <h2 mat-dialog-title>Update Schedule</h2>
+  <form [formGroup]="form" (ngSubmit)="onSave()">
+    <mat-dialog-content style="display: flex; flex-direction: column; gap: 16px;">
+    <mat-form-field>
+    <mat-label>Enter a date range</mat-label>
+    <mat-date-range-input [rangePicker]="rangePicker" formGroupName="dateRange">
+      <input matStartDate  formControlName="start" placeholder="Start date" />
+      <input matEndDate formControlName="end" placeholder="End date" />
+    </mat-date-range-input>
+    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matIconSuffix [for]="rangePicker"></mat-datepicker-toggle>
+    <mat-date-range-picker #rangePicker>
+      <mat-date-range-picker-actions>
+        <button matButton matDateRangePickerCancel>Cancel</button>
+        <button matButton="elevated" matDateRangePickerApply>Apply</button>
+      </mat-date-range-picker-actions>
+    </mat-date-range-picker>
+  </mat-form-field>
+  
+    <mat-form-field>
+      <mat-label>Interval (hours)</mat-label>
+      <input matInput formControlName="interval" type="number" min="1" max="24"required>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Irrigaiton duration (min)</mat-label>
+      <input matInput formControlName="duration" type="number" min="1" max="60" required>
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button type="button" (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid" cdkFocusInitial>Update</button>
+  </mat-dialog-actions>
+  </form>

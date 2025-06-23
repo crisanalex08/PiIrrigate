@@ -1,4 +1,5 @@
-﻿using PiIrrigateServer.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using PiIrrigateServer.Database;
 using PiIrrigateServer.Models;
 
 namespace PiIrrigateServer.Repositories
@@ -16,35 +17,56 @@ namespace PiIrrigateServer.Repositories
     {
         private readonly IServiceScopeFactory serviceScopeFactory;
 
-
         public ScheduleRepository(IServiceScopeFactory scopeFactory)
         {
             this.serviceScopeFactory = scopeFactory;
         }
 
-        public Task CreateSchedule(Schedule schedule)
+        public async Task CreateSchedule(Schedule schedule)
         {
-            throw new NotImplementedException();
+            using var scope = serviceScopeFactory.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            dbContext.Schedules.Add(schedule);
+            await dbContext.SaveChangesAsync();
         }
 
-        public Task DeleteSchedule(int id)
+        public async Task<Schedule> GetScheduleById(int id)
         {
-            throw new NotImplementedException();
+            using var scope = serviceScopeFactory.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            return await dbContext.Schedules.FirstOrDefaultAsync(s => s.Id == id);
         }
 
-        public Task<IEnumerable<Schedule>> GetAllSchedules()
+        public async Task<IEnumerable<Schedule>> GetAllSchedules()
         {
-            throw new NotImplementedException();
+            using var scope = serviceScopeFactory.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            return await dbContext.Schedules.ToListAsync();
         }
 
-        public Task<Schedule> GetScheduleById(int id)
+        public async Task UpdateSchedule(Schedule schedule)
         {
-            throw new NotImplementedException();
+            using var scope = serviceScopeFactory.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            dbContext.Schedules.Update(schedule);
+            await dbContext.SaveChangesAsync();
         }
 
-        public Task UpdateSchedule(Schedule schedule)
+        public async Task DeleteSchedule(int id)
         {
-            throw new NotImplementedException();
+            using var scope = serviceScopeFactory.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var schedule = await dbContext.Schedules.FirstOrDefaultAsync(s => s.Id == id);
+            if (schedule != null)
+            {
+                dbContext.Schedules.Remove(schedule);
+                await dbContext.SaveChangesAsync();
+            }
         }
     }
 }

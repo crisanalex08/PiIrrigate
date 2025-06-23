@@ -42,7 +42,7 @@ void MySerial::sendSensorData(int packetCount, const SensorData& sensorData) {
     char buffer[256];
 
     snprintf(buffer, sizeof(buffer),
-        "C:%d, ID:%02X%02X%02X%02X%02X%02X, T:%.2f, H:%.2f, S:%.2f, R:%.2f, WT:%.2f, WF:%.2f, Lon:%.6f, Lat:%.6f\n",
+        "CNT:%d, ID:%02X%02X%02X%02X%02X%02X, T:%.2f, H:%.2f, S:%.2f, R:%.2f, WT:%.2f, WF:%.2f, Lon:%.6f, Lat:%.6f, CT:%lu, W:% \n",
         packetCount,
         station_mac[0], station_mac[1], station_mac[2], station_mac[3], station_mac[4], station_mac[5],
         sensorData.temperature,
@@ -52,7 +52,9 @@ void MySerial::sendSensorData(int packetCount, const SensorData& sensorData) {
         sensorData.waterTemp,
         sensorData.totalWaterFlow,
         sensorData.longitude,
-        sensorData.latitude
+        sensorData.latitude,
+        sensorData.readingTime,
+        sensorData.watering
     );
 
     send(buffer);

@@ -9,25 +9,29 @@
 #include "water_temp.h"
 #include "gps.h"
 #include "water_flow.h"
+#include "myTime.h"
+
 // Define GPIO pin for an LED (example: GPIO2)
 #define LED_PIN GPIO_NUM_4
 #define MESSAGE_TIMEOUT 20000 // 2 seconds timeout for acknowledgment
 #define RELAY_PIN GPIO_NUM_22
-#define DS18B20_PIN 32
-int packetCount = 0; // Packet count for debugging
+#define DS18B20_PIN GPIO_NUM_32
+#define DHT_GPIO GPIO_NUM_13  // GPIO pin connected to DHT11
 
+int packetCount = 0; // Packet count for debugging
 DHT dht;
+DHT waterDHT;
 RainSensor rainSensor;
 SoilSensor soilSensor;
 MySerial customSerial;
 int newInterval = 10; // Default interval in seconds
-WaterFlowSensor flowSensor(GPIO_NUM_32);
+WaterFlowSensor flowSensor(GPIO_NUM_35);
 GpsModule gpsModule(SERIAL_8N1, GPIO_NUM_34, GPIO_NUM_12, 9600);
 WaterTempSensor waterTemp(DS18B20_PIN);
 
 LoraSender loraSender;
 LoraReceiver loraReceiver;
-
+int watering = 0; // Flag to indicate if watering is active
 void setup()
 {
     // Initialize the serial communication
@@ -35,7 +39,7 @@ void setup()
     customSerial.init();
 
     // Initialize sensors
-    dht.init();
+    dht.init(DHT_GPIO);
     rainSensor.init();
     soilSensor.init();
     waterTemp.init();
@@ -51,6 +55,9 @@ void setup()
     pinMode(LED_PIN, OUTPUT);
     pinMode(RELAY_PIN, OUTPUT);
 
+    #ifdef SENDER
+    initMyTime();
+    #endif
     Serial.println("System initialized");
 }
 
@@ -97,7 +104,6 @@ void loop()
         }
 
         SensorData sensorData;
-        sensorData.timestamp = time(nullptr); 
         sensorData.temperature = static_cast<float>(temperature);
         sensorData.humidity = static_cast<float>(humidity);
         sensorData.soilMoisture = static_cast<float>(soilMoisture);
@@ -106,7 +112,8 @@ void loop()
         sensorData.totalWaterFlow = totalLiters; // Total water flow in liters
         sensorData.longitude = longitude;        // Placeholder for GPS data
         sensorData.latitude = latitude;          // Placeholder for GPS data
-
+        sensorData.readingTime = getEpochTime(); // Current timestamp
+        sensorData.watering = watering;          // Include watering status
         // Send sensor data via custom serial
         customSerial.sendSensorData(packetCount, sensorData);
 
@@ -140,11 +147,13 @@ void loop()
         else if (command.methodName == "relayOn")
         {
             digitalWrite(RELAY_PIN, HIGH);
+            watering = 1;
             Serial.println("Relay turned ON");
         }
         else if (command.methodName == "relayOff")
         {
             digitalWrite(RELAY_PIN, LOW);
+            watering = 0;
             Serial.println("Relay turned OFF");
         }
     }
@@ -159,7 +168,7 @@ void loop()
     {
         char buffer[256];
         snprintf(buffer, sizeof(buffer),
-                 "C:%d, ID:%02X%02X%02X%02X%02X%02X, T:%.2f, H:%.2f, S:%.2f, R:%.2f, WT:%.2f, WF:%.2f, Lon:%.6f, Lat:%.6f, CT:\n",
+                 "CNT:%d, ID:%02X%02X%02X%02X%02X%02X, T:%.2f, H:%.2f, S:%.2f, R:%.2f, WT:%.2f, WF:%.2f, Lon:%.6f, Lat:%.6f, CT:%lu, W:%d\n",
                  receivedPacket.packetCount,
                  receivedPacket.stationMac[0], receivedPacket.stationMac[1], receivedPacket.stationMac[2],
                  receivedPacket.stationMac[3], receivedPacket.stationMac[4], receivedPacket.stationMac[5],
@@ -171,7 +180,9 @@ void loop()
                  receivedPacket.sensorData.totalWaterFlow,
                  receivedPacket.sensorData.longitude,
                  receivedPacket.sensorData.latitude,
-                 receivedPacket.sensorData.timestamp);
+                 receivedPacket.sensorData.readingTime,
+                 receivedPacket.sensorData.watering
+                );
         // Send formatted data via custom serial
         customSerial.send(buffer);
 

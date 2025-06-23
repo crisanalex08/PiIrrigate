@@ -40,12 +40,12 @@ export class DashboardService {
       content: LiveRainfallComponent
     },
     {
-      id: 4,
+      id: 5,
       label: 'Water Flow',
       content: LiveWaterFlowComponent
     },
     {
-      id: 5,
+      id: 6,
       label: 'Water Temperature',
       content: LiveWaterTemperatureComponent
     },    

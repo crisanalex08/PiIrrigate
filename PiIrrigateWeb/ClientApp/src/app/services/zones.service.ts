@@ -11,7 +11,7 @@ export class ZonesService {
 
   private baseUrl = 'https://localhost:7133';
   userDetails: RegisteredUser | null = null;
-  zones: Zone[] = [];
+  zones: ZoneData[] = [];
   zonesWithDevices: ZoneData[] = [];
   devices: Device[] = [];
   constructor(private authService: AuthService, private http: HttpClient) {
@@ -20,7 +20,7 @@ export class ZonesService {
 
   updateZones() {
     this.getZones().subscribe(
-      (response: Zone[]) => {
+      (response: ZoneData[]) => {
         this.zones = response;
         this.zones.forEach(zone => {
           this.getDevices(zone.zoneId).subscribe(
@@ -39,6 +39,10 @@ export class ZonesService {
   }
   public getZones() {
     return this.http.get<Zone[]>(`${this.baseUrl}/zone/${this.userDetails?.userId}/zones`);
+  }
+
+  public getDevicesForZone(zoneId: string) {
+    return this.http.get<Device[]>(`${this.baseUrl}/device/${zoneId}/devices`);
   }
 
   public getDevices(zoneId: string) {

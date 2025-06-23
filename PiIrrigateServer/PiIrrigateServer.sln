@@ -5,6 +5,10 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PiIrrigateServer", "PiIrrigateServer.csproj", "{FDDFB337-F866-49FC-88D5-8295471167DF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PiIrrigateTests", "..\PiIrrigateTests\PiIrrigateTests.csproj", "{F308B7FB-6C8C-44F1-A8B1-234AADAF6ACC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helper", "..\Helper\Helper.csproj", "{C088949C-8382-4D74-AD88-9F912CD65B4A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{FDDFB337-F866-49FC-88D5-8295471167DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDDFB337-F866-49FC-88D5-8295471167DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDDFB337-F866-49FC-88D5-8295471167DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F308B7FB-6C8C-44F1-A8B1-234AADAF6ACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F308B7FB-6C8C-44F1-A8B1-234AADAF6ACC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F308B7FB-6C8C-44F1-A8B1-234AADAF6ACC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F308B7FB-6C8C-44F1-A8B1-234AADAF6ACC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C088949C-8382-4D74-AD88-9F912CD65B4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C088949C-8382-4D74-AD88-9F912CD65B4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C088949C-8382-4D74-AD88-9F912CD65B4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C088949C-8382-4D74-AD88-9F912CD65B4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

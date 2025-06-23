@@ -12,5 +12,7 @@
         public int waterTemperatureLowThreshold {get;set;}
         public bool irrigationRunning {get;set;}
         public bool enableNotifications {get;set;}
+        public bool enableAutomation {get;set;}
+        public int refreshInterval { get; set; }
     }
 }

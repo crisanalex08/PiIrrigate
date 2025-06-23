@@ -4,11 +4,11 @@ namespace PiIrrigateServer.Models
 {
     public class CreateScheduleRequest
     {
-        public C2DMessageRequest Request { get; set; }
         public DateTime StartTime { get; set; }
-        public TimeSpan Duration { get; set; }
-        public TimeSpan Interval { get; set; }
-        public bool AutoStop { get; set; }
+        public int Duration { get; set; }
+        public int Interval { get; set; }
         public DateTime EndTime { get; set; }
+        public string ZoneId { get; set; }
+        public string DeviceId { get; set; }
     }
 }

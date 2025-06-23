@@ -1,0 +1,60 @@
+<form #configForm="ngForm">
+  <div style="display: flex; flex-direction: column; gap: 16px; max-width: 600px;">
+    <!-- Soil Moisture Thresholds -->
+    <div style="display: flex; gap: 16px;">
+      <mat-form-field style="flex:1;">
+        <mat-label>Soil Moisture Low Threshold (%)</mat-label>
+        <input matInput type="number" name="soilMoistureLowThreshold" [(ngModel)]="configuration.soilMoistureLowThreshold">
+      </mat-form-field>
+      <mat-form-field style="flex:1;">
+        <mat-label>Soil Moisture High Threshold (%)</mat-label>
+        <input matInput type="number" name="soilMoistureHighThreshold" [(ngModel)]="configuration.soilMoistureHighThreshold">
+      </mat-form-field>
+    </div>
+    <!-- Rain Drop Thresholds -->
+    <div style="display: flex; gap: 16px;">
+      <mat-form-field style="flex:1;">
+        <mat-label>Rain Drop Low Threshold (%)</mat-label>
+        <input matInput type="number" name="rainDropLowThreshold" [(ngModel)]="configuration.rainDropLowThreshold">
+      </mat-form-field>
+      <mat-form-field style="flex:1;">
+        <mat-label>Rain Drop High Threshold (%)</mat-label>
+        <input matInput type="number" name="rainDropHighThreshold" [(ngModel)]="configuration.rainDropHighThreshold">
+      </mat-form-field>
+    </div>
+    <!-- Water Flow Thresholds -->
+    <div style="display: flex; gap: 16px;">
+      <mat-form-field style="flex:1;">
+        <mat-label>Water Flow Low Threshold (l/min)</mat-label>
+        <input matInput type="number" name="waterFlowLowThreshold" [(ngModel)]="configuration.waterFlowLowThreshold">
+      </mat-form-field>
+      <mat-form-field style="flex:1;">
+        <mat-label>Water Flow High Threshold(l/min)</mat-label>
+        <input matInput type="number" name="waterFlowHighThreshold" [(ngModel)]="configuration.waterFlowHighThreshold">
+      </mat-form-field>
+    </div>
+    <!-- Water Temperature Thresholds -->
+    <div style="display: flex; gap: 16px;">
+      <mat-form-field style="flex:1;">
+        <mat-label>Water Temp Low Threshold (°C)</mat-label>
+        <input matInput type="number" name="waterTemperatureLowThreshold" [(ngModel)]="configuration.waterTemperatureLowThreshold">
+      </mat-form-field>
+      <mat-form-field style="flex:1;">
+        <mat-label>Water Temp High Threshold (°C)</mat-label>
+        <input matInput type="number" name="waterTemperatureHighThreshold" [(ngModel)]="configuration.waterTemperatureHighThreshold">
+      </mat-form-field>
+    </div>
+    <!-- Booleans and Refresh -->
+    <div style="display: flex; flex-direction: column; gap: 32px; align-items: left;">
+      <mat-form-field style="flex:1;">
+        <mat-label>Refresh Interval</mat-label>
+        <input matInput type="number" name="refreshInterval" [(ngModel)]="configuration.refreshInterval">
+      </mat-form-field>
+      <mat-slide-toggle [(ngModel)]="configuration.enableNotifications" [checked]="isNotificationEnabled" name="enableNotifications">Enable Notifications </mat-slide-toggle>
+      <mat-slide-toggle [(ngModel)]="configuration.enableAutomation" [checked]="isAutomationEnabled" name="enableAutomation">Enable Automation </mat-slide-toggle>
+    </div>
+    <div>
+      <button mat-raised-button type="submit" (click)="saveConfiguration()" >Save</button>
+    </div>
+  </div>
+</form>

@@ -2,11 +2,12 @@
 #include "dht.h"
 #include "driver/gpio.h"
 
-#define DHT_GPIO GPIO_NUM_13  // GPIO pin connected to DHT11
+int DHT_GPIO = 13;  // Define the GPIO pin for DHT sensor
 
-void DHT::init() {
-    pinMode(DHT_GPIO, OUTPUT);
-    digitalWrite(DHT_GPIO, HIGH);  // Set default state to HIGH
+void DHT::init(int pin) {
+    DHT_GPIO = pin;  // Set the GPIO pin for DHT sensor
+    pinMode(pin, OUTPUT);
+    digitalWrite(pin, HIGH);  // Set default state to HIGH
 }
 
 int DHT::read(int &humidity, int &temperature) {

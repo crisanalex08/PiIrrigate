@@ -10,7 +10,7 @@ public:
      *
      * This function configures the GPIO pin connected to the DHT sensor.
      */
-    void init();
+    void init(int pin = 13);
 
     /**
      * @brief Read data from the DHT sensor.

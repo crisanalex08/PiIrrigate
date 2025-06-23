@@ -6,7 +6,7 @@
 #include "esp_adc_cal.h"
 
 // Define the ADC channel connected to the soil moisture sensor
-#define SOIL_SENSOR_ADC_CHANNEL ADC1_CHANNEL_1  // Example: GPIO36 (ADC1_CH1)
+#define SOIL_SENSOR_ADC_CHANNEL ADC1_CHANNEL_3  // Example: GPIO39 (ADC1_CH3)
 
 class SoilSensor {
 public:

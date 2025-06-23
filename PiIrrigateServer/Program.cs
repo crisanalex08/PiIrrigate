@@ -35,14 +35,17 @@ builder.Services.AddScoped<IZoneRepository, ZoneRepository>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 builder.Services.AddScoped<IiotDeviceManager, IotDeviceManager>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IrrigationManager>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddSingleton<IDataRepository, DataRepository>();
+builder.Services.AddSingleton<ConfigurationService>();
 builder.Services.AddSingleton<DataSenderMock>();
 builder.Services.AddSingleton<C2DMessageSenderManager>();
 
 builder.Services.Configure<IoTHubConfiguraiton>(builder.Configuration.GetSection("IotHubConfiguration"));
 
 builder.Services.AddHostedService<IoTHubDataManager>();
+builder.Services.AddHostedService<ScheduleBackgroundService>();
 var app = builder.Build();
 
 app.UseSwagger();

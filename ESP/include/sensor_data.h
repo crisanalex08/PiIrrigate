@@ -7,7 +7,6 @@
 // ALl values are float to allow for decimal precision
 // All readings represent physical quantities that can be measured by sensors.
 struct SensorData {
-    time_t timestamp;
     float temperature;
     float humidity;
     float soilMoisture;
@@ -16,10 +15,13 @@ struct SensorData {
     float totalWaterFlow;
     float longitude;
     float latitude;
+    bool watering;
+    time_t readingTime;
+
 
     SensorData()
         : temperature(0.0f), humidity(0.0f), soilMoisture(0.0f), rainLevel(0.0f),
-          waterTemp(0.0f), totalWaterFlow(0.0f), longitude(0.0f), latitude(0.0f) {}
+          waterTemp(0.0f), totalWaterFlow(0.0f), longitude(0.0f), latitude(0.0f), watering(false), readingTime(0) {}
 };
 
 //Struct for LoRa packet

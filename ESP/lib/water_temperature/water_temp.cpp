@@ -63,13 +63,13 @@ uint8_t WaterTempSensor::readByte() {
 
 float WaterTempSensor::readTemperature() {
     if (!resetPulse()) {
+        Serial.println("DS18B20 not detected!");
         return NAN;
     }
     writeByte(0xCC); // Skip ROM
     writeByte(0x44); // Convert T
 
-    // Wait for conversion (typical max 750ms for 12-bit)
-    delay(750);
+    delay(750); // Wait for conversion
 
     if (!resetPulse()) {
         return NAN;

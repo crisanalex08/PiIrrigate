@@ -6,6 +6,8 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { ZonesService } from '../../services/zones.service';
 import { ZoneData, Device } from '../../models/zone';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 
 interface FlatNode {
   expandable: boolean;
@@ -17,20 +19,33 @@ interface FlatNode {
 @Component({
   selector: 'app-zones',
   standalone: true,
-  imports: [CommonModule, MatTreeModule, MatIconModule],
+  imports: [CommonModule, MatTreeModule, MatIconModule, MatButtonModule, MatMenuModule],
   providers: [ZonesService],
   template: `
     <div class="header">
       <h2 class="title">Zones & Devices</h2>
     </div>
 
-    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="mat-elevation-z">
+    <div style="display: flex; ">
+      <button mat-raised-button color="primary">
+        <mat-icon>add</mat-icon>  Register Zone
+      </button>
+      <button mat-raised-button color="primary">
+        <mat-icon>add</mat-icon>  Register Device
+      </button>
+      <span class="divider"></span>
+</div>
+    
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="mat-elevation-z" style="z-index: -1;">
       <!-- Zone node -->
       <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodeToggle>
         <li class="mat-tree-node">
           <div class="icon-container">
           <strong>{{node.name}}</strong>
           <div class="spacer"></div>
+          <button mat-icon-button >
+          <mat-icon>delete</mat-icon>
+          </button>
           <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
             <mat-icon>
               {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
@@ -45,6 +60,15 @@ interface FlatNode {
           <mat-icon color="primary" style="vertical-align: middle;">memory</mat-icon>
           {{node.name}} <span style="color: white;">({{node.mac}})</span>
         </li>
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item>
+        <mat-icon>delete</mat-icon>
+        <span>Remove Device</span>
+      </button>
+    </mat-menu>
       </mat-tree-node>
     </mat-tree>
   `,
